@@ -4,4 +4,4 @@ from hub import motor_pair, color_sensor, motor, runloop, orientation, force_sen
 
 #Initialize the motor pair
 
-motor_pair.pair(motor_pair.PAIR_1, port.A, port.B)
+motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
