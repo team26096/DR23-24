@@ -16,7 +16,7 @@ async def gyro_follow_angle_for_distance(angle, distance_to_cover):
     steering_angle:int = angle
     while (distance_covered <= distance_to_cover):
         # Move straight at default velocity for 360 degrees
-        motor_pair.move_for_degrees(motor_pair.PAIR_1, step, steering_angle)
+        await motor_pair.move_for_degrees(motor_pair.PAIR_1, step, steering_angle)
         # Read the sensor values and adjust angles
         steering_angle = (motion_sensor.tilt_angles()[0] * -1) + angle
         distance_covered += step
