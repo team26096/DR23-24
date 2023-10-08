@@ -3,26 +3,23 @@ import runloop
 import motor_pair
 from hub import motion_sensor
 
-
-async def gyro_follow_angle_for_distance(angle, distance):
+'''
+arg1: angle (in degrees)
+arg2: distance_to_cover (in degrees - 360 degrees is one full rotation of robot wheel)
+async def gyro_follow_angle_for_distance(angle, distance_to_cover):
     # divide distance into 10 equal parts
     motion_sensor.reset_yaw(0)
-    step = int(distance/10)
-
+    step = int(distance_to_cover/10)
+    distance_covered = int(0)
     left_velocity = 300
     right_velocity = 300
     steering_angle:int = angle
-    while (step <= distance):
-        
+    while (distance_covered <= distance_to_cover):
         # Move straight at default velocity for 360 degrees
         motor_pair.move_for_degrees(motor_pair.PAIR_1, step, steering_angle)
         # Read the sensor values and adjust angles
-        # current_sensor_values = motion_sensor.tilt_angles()
-        # Say yaw is +10, this means the robot has deviated 10 degrees. To get it back on straight line,
-        # we will have to double the skew
         steering_angle = (motion_sensor.tilt_angles()[0] * -1) + angle
-        step += int(distance/10)
-        
+        distance_covered += step
         print("steering_angle=", steering_angle)
     print("DONE")
 
