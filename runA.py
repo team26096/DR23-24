@@ -3,9 +3,10 @@ import runloop
 import motor_pair
 from hub import motion_sensor
 
-'''
-arg1: angle (in degrees)
-arg2: distance_to_cover (in degrees - 360 degrees is one full rotation of robot wheel)
+"""
+#arg1: angle (in degrees)
+#arg2: distance_to_cover (in degrees - 360 degrees is one full rotation of robot wheel)
+"""
 async def gyro_follow_angle_for_distance(angle, distance_to_cover):
     # divide distance into 10 equal parts
     motion_sensor.reset_yaw(0)
@@ -24,9 +25,14 @@ async def gyro_follow_angle_for_distance(angle, distance_to_cover):
         print("steering_angle=", steering_angle)
     print("DONE")
 
+async def do_3d_cinema(angle, distance_to_cover):
+    # Move straight at default velocity for 360 degrees
+    motor_pair.move_for_degrees(motor_pair.PAIR_1, distance_to_cover, angle)
+    print("DONE")
+    
 async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)    
-    await gyro_follow_angle_for_distance(0, 360)
-
+    # await gyro_follow_angle_for_distance(0, 360)
+    await do_3d_cinema(0, 360)
 
 runloop.run(main())
