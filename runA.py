@@ -34,5 +34,6 @@ async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)    
     # await gyro_follow_angle_for_distance(0, 360)
     await do_3d_cinema(0, 360)
+    await do_3d_cinema(0, -360)
 
 runloop.run(main())
