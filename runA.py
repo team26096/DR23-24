@@ -16,24 +16,25 @@ async def gyro_follow_angle_for_distance(angle, distance_to_cover):
     left_velocity = 300
     right_velocity = 300
     steering_angle:int = angle
-    while (distance_covered < distance_to_cover):
+    while (distance_covered <= distance_to_cover):
+        motion_sensor.reset_yaw(0)
         # Move straight at default velocity for 360 degrees
-        await motor_pair.move_for_degrees(motor_pair.PAIR_1, step, steering_angle)
+        motor_pair.move_for_degrees(motor_pair.PAIR_1, step, steering_angle)
         # Read the sensor values and adjust angles
         steering_angle = (motion_sensor.tilt_angles()[0] * -1) + angle
         distance_covered += step
         print("steering_angle=", steering_angle)
-    print("DONE")
+    print("Gyro angle follow DONE")
 
 async def do_3d_cinema(angle, distance_to_cover):
     # Move straight at default velocity for 360 degrees
     motor_pair.move_for_degrees(motor_pair.PAIR_1, distance_to_cover, angle)
-    print("DONE")
-    
+    print(distance_to_cover)
+    print("plain move_for_degrees DONE")
+
 async def main():
-    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)    
-    # await gyro_follow_angle_for_distance(0, 360)
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+    await gyro_follow_angle_for_distance(0, 360)
     await do_3d_cinema(0, 360)
-    await do_3d_cinema(0, -360)
 
 runloop.run(main())
