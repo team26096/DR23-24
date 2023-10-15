@@ -21,7 +21,7 @@ async def gyro_in_place_turn_for_decidegrees(decidegrees):
     else:
         # if decidegrees is 0, there is nothing to do!
         return
-    while abs(motion_sensor.tilt_angles()[0]) < decidegrees:
+    while abs(motion_sensor.tilt_angles()[0]) < abs(decidegrees):
         motor_pair.move(motor_pair.PAIR_1,steering)
     
     motor_pair.stop(motor_pair.PAIR_1)
@@ -51,7 +51,6 @@ async def gyro_assisted_move_for_distance(distance_to_cover, steering_correction
     while (distance_covered < distance_to_cover):
         current_position = abs(motor.relative_position(port.A))
         distance_covered = current_position - initial_position
-        print(current_position)
         current_yaw = motion_sensor.tilt_angles()[0]
         if current_yaw < 0:
             # steer slightly to the right
@@ -73,7 +72,7 @@ async def do_3d_cinema(angle, distance_to_cover):
 async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     # Turn the robot 45 degrees (450 decidegrees) in place
-    await gyro_in_place_turn_for_decidegrees(450)
+    await gyro_in_place_turn_for_decidegrees(-450)
     await gyro_assisted_move_for_distance(720,1)
     #await do_3d_cinema(0, 360)
 
