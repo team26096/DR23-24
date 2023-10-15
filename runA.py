@@ -72,7 +72,7 @@ async def do_3d_cinema(angle, distance_to_cover):
 async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     # Turn the robot 45 degrees (450 decidegrees) in place
-    await gyro_in_place_turn_for_decidegrees(-450)
+    await gyro_in_place_turn_for_decidegrees(450)
     await gyro_assisted_move_for_distance(720,1)
     #await do_3d_cinema(0, 360)
 
