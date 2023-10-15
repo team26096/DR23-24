@@ -3,6 +3,7 @@ import motor
 import runloop
 import motor_pair
 from hub import motion_sensor
+
 """
 This function turns the gyro in place to specified deci degrees (-1800 to 1800)
 This is achieved by setting a steering value of -100 or + 100 based on which
@@ -15,14 +16,15 @@ async def gyro_in_place_turn_for_decidegrees(decidegrees):
     initial_yaw = 0
     if decidegrees > 0:
         steering = 100
-    else if decidegrees < 0:
+    elif decidegrees < 0:
         steering = -100
     else:
         # if decidegrees is 0, there is nothing to do!
-        pass
-    while abs(motion_sensor.tilt_angles()[0]) < angle:
+        return
+    while abs(motion_sensor.tilt_angles()[0]) < decidegrees:
         motor_pair.move(motor_pair.PAIR_1,steering)
-    motor_pair.stop()
+    
+    motor_pair.stop(motor_pair.PAIR_1)
     # reset the yaw again, so where we are facing is the new 0!
     motion_sensor.reset_yaw(0)
 
@@ -33,8 +35,8 @@ straight line. It uses the yaw value to adjust steering (if needed) to correct d
 Usually a low steering correction is sufficient.
 #arg1: distance_to_cover (in degrees - 360 degrees is one full rotation of robot wheel)
 #arg2: how much steering correction to do at a time to adjust direction. Note this has to
-       be a low value, otherwise the movement could be erratic. recommended values are 1
-       to 10. 
+    be a low value, otherwise the movement could be erratic. recommended values are 1
+    to 10.
 """
 async def gyro_assisted_move_for_distance(distance_to_cover, steering_correction):
     # set yaw face and reset yaw
@@ -54,7 +56,7 @@ async def gyro_assisted_move_for_distance(distance_to_cover, steering_correction
         if current_yaw < 0:
             # steer slightly to the right
             motor_pair.move(motor_pair.PAIR_1,steering_correction)
-        else if current_yaw > 0:
+        elif current_yaw > 0:
             motor_pair.move(motor_pair.PAIR_1,-steering_correction)
         #await runloop.sleep_ms(20)
 
@@ -71,8 +73,8 @@ async def do_3d_cinema(angle, distance_to_cover):
 async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     # Turn the robot 45 degrees (450 decidegrees) in place
-    await gyro_in_pace_turn_for_decidegrees(450)
-    await gyro_follow_angle_for_distance(720,1)
+    await gyro_in_place_turn_for_decidegrees(450)
+    await gyro_assisted_move_for_distance(720,1)
     #await do_3d_cinema(0, 360)
 
 runloop.run(main())
