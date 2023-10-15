@@ -65,21 +65,17 @@ Usually a low steering correction is sufficient.
 async def gyro_assisted_move(angle, stop_function, **kwargs):
     stop_function(angle, **kwargs)
      
-
-async def do_3d_cinema(angle, distance_to_cover):
-    # Move straight at default velocity for 360 degrees
-    motor_pair.move_for_degrees(motor_pair.PAIR_1, distance_to_cover, angle)
-    print(distance_to_cover)
-    print("plain move_for_degrees DONE")
-
 async def main():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     motion_sensor.set_yaw_face(motion_sensor.FRONT)
     motion_sensor.reset_yaw(0)
+    # get current yaw_value
+    yaw_value = motion_sensor.tilt_angles()[0]
     # Turn the robot 45 degrees (450 decidegrees) in place
     await gyro_in_place_turn_for_decidegrees(450)
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=720)
-    #await do_3d_cinema(0, 360)
+    # New yaw value should be
+    yaw_value += 450
+    await gyro_assisted_move(yaw_value, follow_angle_for_distance, distance_to_cover=720)
 
 runloop.run(main())
 
