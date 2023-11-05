@@ -25,7 +25,7 @@ def get_all_values():
     cs_left = color_sensor.reflection(port.D)
     cs_right = color_sensor.reflection(port.F)
     yaw = motion_sensor.tilt_angles()[0] * -0.1
-    print("yaw={}", yaw)
+    #print("yaw={}", yaw)
     #print("csl={}", cs_left)
     #print("csr={}", cs_right)
 
@@ -40,7 +40,7 @@ def wait_for_left_color(clr=0):
     cs_left = color_sensor.reflection(port.D)
     print("wflc entry csl={}", cs_left)
     if clr == 0:
-        while cs_left > 20: 
+        while cs_left > 20:
             cs_left = color_sensor.reflection(port.D)
             runloop.sleep_ms(100)
     else:
@@ -115,7 +115,7 @@ async def gyro_in_place_turn_for_decidegrees(decidegrees):
 def follow_forever():
     return True
 
-def follow_angle_for_distance(angle, distance_to_cover, steering_proportion_fatcor=9):
+def follow_angle_for_distance(angle, distance_to_cover, speed=200, steering_proportion_fatcor=9):
     # get initial reading from left motor
     initial_position = abs(motor.relative_position(port.A))
     # print(initial_position)
@@ -124,31 +124,98 @@ def follow_angle_for_distance(angle, distance_to_cover, steering_proportion_fatc
     while (distance_covered < distance_to_cover):
         current_position = abs(motor.relative_position(port.A))
         distance_covered = current_position - initial_position
+        if distance_covered < 0 : distance_covered = distance_covered * -1
         current_yaw = motion_sensor.tilt_angles()[0]
         # print("current_yaw = {}".format(current_yaw))
         # if current_yaw < angle:
-        #     # steer slightly to the right
-        #     motor_pair.move(motor_pair.PAIR_1, int(-1000/(angle - current_yaw)))
+        #    # steer slightly to the right
+        #    motor_pair.move(motor_pair.PAIR_1, int(-1000/(angle - current_yaw)))
         # elif current_yaw > angle:
-        #     motor_pair.move(motor_pair.PAIR_1, int(1000/(angle - current_yaw)))
+        #    motor_pair.move(motor_pair.PAIR_1, int(1000/(angle - current_yaw)))
         # else:
-        #     motor_pair.move(motor_pair.PAIR_1, angle)
-        print(current_yaw)
+        #    motor_pair.move(motor_pair.PAIR_1, angle)
+        # print(current_yaw)
         if abs(current_yaw) != abs(angle):
             # The reason we are dividing by 18 is this:
             # The range of steering (Difference between power to be given to two wheels) is -100 to 100 (total range of <200>)
             # Yaw angle range is -180 to +179, that is 360, or <3600> in decidegrees
-            # Thus 3600 / 200 = 18  - So steering is adjusted by a factor of 18
+            # Thus 3600 / 200 = 18- So steering is adjusted by a factor of 18
             # So if yaw is off by 18 decidegrees (about 1.8 or 2 degress), a steering will be adjusted by a factor of 1 (18)
-            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=500)
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
 
     motor_pair.stop(motor_pair.PAIR_1)
     print("Total distance travelled = ", distance_covered)
     print("Gyro follow angle for distance DONE")
 
+def follow_angle_for_left_color_black(angle, speed=200, steering_proportion_fatcor=9):
+    print("follow_angle_for_left_color_black start")
+
+    # get initial reading from left color sensor
+    cs_left = color_sensor.reflection(port.D)
+    # print(cs_left)
+    motor_pair.move(motor_pair.PAIR_1, angle)
+    while (cs_left > 20):
+        current_yaw = motion_sensor.tilt_angles()[0]
+        # print(current_yaw)
+        if abs(current_yaw) != abs(angle):
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+        cs_left = color_sensor.reflection(port.D)
+
+    motor_pair.stop(motor_pair.PAIR_1)
+    print("follow_angle_for_left_color_black DONE")
+
+def follow_angle_for_left_color_white(angle, speed=200, steering_proportion_fatcor=9):
+    print("follow_angle_for_left_color_white start")
+
+    # get initial reading from left color sensor
+    cs_left = color_sensor.reflection(port.D)
+    # print(cs_left)
+    motor_pair.move(motor_pair.PAIR_1, angle)
+    while (cs_left < 90):
+        current_yaw = motion_sensor.tilt_angles()[0]
+        # print(current_yaw)
+        if abs(current_yaw) != abs(angle):
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+        cs_left = color_sensor.reflection(port.D)
+
+    motor_pair.stop(motor_pair.PAIR_1)
+    print("follow_angle_for_left_color_white DONE")
+
+def follow_angle_for_right_color_black(angle, speed=200, steering_proportion_fatcor=9):
+    print("follow_angle_for_right_color_black start")
+
+    # get initial reading from right color sensor
+    cs_right = color_sensor.reflection(port.F)
+    # print(cs_right)
+    motor_pair.move(motor_pair.PAIR_1, angle)
+    while (cs_right > 20):
+        current_yaw = motion_sensor.tilt_angles()[0]
+        # print(current_yaw)
+        if abs(current_yaw) != abs(angle):
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+        cs_right = color_sensor.reflection(port.F)
+
+    motor_pair.stop(motor_pair.PAIR_1)
+    print("follow_angle_for_right_color_black DONE")
+
+def follow_angle_for_right_color_white(angle, speed=200, steering_proportion_fatcor=9):
+    print("follow_angle_for_right_color_white start")
+
+    # get initial reading from left color sensor
+    cs_right = color_sensor.reflection(port.F)
+    # print(cs_right)
+    motor_pair.move(motor_pair.PAIR_1, angle)
+    while (cs_right < 90):
+        current_yaw = motion_sensor.tilt_angles()[0]
+        # print(current_yaw)
+        if abs(current_yaw) != abs(angle):
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+        cs_right = color_sensor.reflection(port.F)
+
+    motor_pair.stop(motor_pair.PAIR_1)
+    print("follow_angle_for_right_color_white DONE")
 
 # Main programs --------------------
-
 async def sample_gyro_assisted_move():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     motion_sensor.set_yaw_face(motion_sensor.FRONT)
@@ -163,7 +230,7 @@ async def sample_gyro_assisted_move():
 
 async def runA():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    
+
     await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(20), 0)
     #spin_gyro_turn(100, 50, 90, True)
     pivot_gyro_turn(80, 0, 900, True)
@@ -171,20 +238,38 @@ async def runA():
 
 async def runD():
     print("Inside runD")
-    motor.run_for_degrees(port.C, 600, -500) # move rack left
+    # move horizontal rack to left to avoid collision with lights and sound
+    motor.run_for_degrees(port.B, 550, -500) # move rack left
+
+    # initialize motor pair
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    
-    
-    move_until_left_black(0, 200, 0, True)
-    move_until_left_white(0, 200, 0, True)
-    move_until_left_black(0, 200, 0, True)
-    move_until_left_white(0, 200, 0, True)
-    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(12), 0)
-    move_until_left_black(0, -80, 0, True)
-    # move_until_left_white(0, -80, 0, True)
-    # move_until_left_black(0, -80, 0, True)
-    pivot_gyro_turn(0, -80, 45, True)
-    motor.run_for_degrees(port.C, 600, 500) # move rack right
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.FRONT)
+    motion_sensor.reset_yaw(0)
+    # move robot to approach audience drop off with checkpoints along the way
+    await gyro_assisted_move(0, follow_angle_for_right_color_black, speed=150)
+    await gyro_assisted_move(0, follow_angle_for_right_color_white, speed=150)
+    await gyro_assisted_move(0, follow_angle_for_right_color_black, speed=150)
+
+    # move forward to complete audience drop off 
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=80)
+
+    # sleep to ensure drop off is complete
+    runloop.sleep_ms(250)
+    # move robot backward to align with hologram performer
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(8), speed=-80)
+    # align with hologram performer
+    pivot_gyro_turn(0, -80, 42, True)
+    # move horizontal rack to right to align with lights and sound 
+    motor.run_for_degrees(port.B, 600, 500)
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.FRONT)
+    motion_sensor.reset_yaw(0)
+    # move forwward to push hologram performer lever and complete the mission 
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(10), speed=80)
+    # move horizontal rack left to complete sound mixer and align with lights lever
+    motor.run_for_degrees(port.B, 600, -500)
+
     print("Done with runD")
 
 
