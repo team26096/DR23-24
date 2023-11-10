@@ -236,10 +236,18 @@ async def runA():
     pivot_gyro_turn(80, 0, 900, True)
     #sys.exit("Finished")
 
+async def runA():
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+
+    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(20), 0)
+    #spin_gyro_turn(100, 50, 90, True)
+    pivot_gyro_turn(80, 0, 900, True)
+    #sys.exit("Finished")
+
 async def runD():
     print("Inside runD")
     # move horizontal rack to left to avoid collision with lights and sound
-    motor.run_for_degrees(port.B, 550, -500) # move rack left
+    motor.run_for_degrees(port.B, 500, -500) # move rack left
 
     # initialize motor pair
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
@@ -247,30 +255,40 @@ async def runD():
     motion_sensor.set_yaw_face(motion_sensor.FRONT)
     motion_sensor.reset_yaw(0)
     # move robot to approach audience drop off with checkpoints along the way
-    await gyro_assisted_move(0, follow_angle_for_right_color_black, speed=150)
-    await gyro_assisted_move(0, follow_angle_for_right_color_white, speed=150)
-    await gyro_assisted_move(0, follow_angle_for_right_color_black, speed=150)
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(34), speed=300)
+    await gyro_assisted_move(0, follow_angle_for_right_color_white, speed=200)
+    await gyro_assisted_move(0, follow_angle_for_right_color_black, speed=200)
 
-    # move forward to complete audience drop off 
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=80)
+    # move forward to complete audience drop off
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=100)
 
     # sleep to ensure drop off is complete
     runloop.sleep_ms(250)
     # move robot backward to align with hologram performer
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(8), speed=-80)
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(10), speed=-100)
     # align with hologram performer
     pivot_gyro_turn(0, -80, 42, True)
-    # move horizontal rack to right to align with lights and sound 
-    motor.run_for_degrees(port.B, 600, 500)
+    # move horizontal rack to right to align with lights and sound
+    motor.run_for_degrees(port.B, 500, 500)
     # reset yaw to 0
     motion_sensor.set_yaw_face(motion_sensor.FRONT)
     motion_sensor.reset_yaw(0)
-    # move forwward to push hologram performer lever and complete the mission 
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(10), speed=80)
+    # move forwward to push hologram performer lever and complete the mission
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=80)
     # move horizontal rack left to complete sound mixer and align with lights lever
-    motor.run_for_degrees(port.B, 600, -500)
+    await motor.run_for_degrees(port.B, 600, -250)
+
+    # move robot backward to pull light lever
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=-80)
+    # align with hologram performer
+    pivot_gyro_turn(100, 0, 50, True)
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.FRONT)
+    motion_sensor.reset_yaw(0)
+    runloop.sleep_ms(500)
+    # go back to base
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(55), speed=100)
 
     print("Done with runD")
-
 
 runloop.run(runD())
