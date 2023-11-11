@@ -49,6 +49,20 @@ def wait_for_left_color(clr=0):
             runloop.sleep_ms(100)
     print("wflc exit csl={}", cs_left)
 
+def wait_for_right_color(clr=0):
+    cs_right = color_sensor.reflection(port.F)
+    print("wflc entry csl={}", cs_right)
+    if clr == 0:
+        while cs_right > 20:
+            cs_right = color_sensor.reflection(port.F)
+            runloop.sleep_ms(100)
+    else:
+        while cs_right < 90:
+            cs_right = color_sensor.reflection(port.F)
+            runloop.sleep_ms(100)
+    print("wflc exit csl={}", cs_right)
+
+
 def spin_gyro_turn(steer=100, speed=50, angle=90, stop=False):
     motion_sensor.reset_yaw(0)
     motor_pair.move(motor_pair.PAIR_1, steer, velocity=speed, acceleration=100)
@@ -72,6 +86,20 @@ def move_until_left_white(steer=100, speed=50, angle=90, stop=False):
     print("Inside move until white")
     motor_pair.move(motor_pair.PAIR_1, steer, velocity=speed, acceleration=100)
     wait_for_left_color(1)
+    if stop: motor_pair.stop(motor_pair.PAIR_1)
+    print("Done with move until white")
+
+def move_until_right_black(steer=100, speed=50, angle=90, stop=False):
+    print("Inside move until black")
+    motor_pair.move(motor_pair.PAIR_1, steer, velocity=speed, acceleration=100)
+    wait_for_right_color(0)
+    if stop: motor_pair.stop(motor_pair.PAIR_1)
+    print("Done with move until black")
+
+def move_until_right_white(steer=100, speed=50, angle=90, stop=False):
+    print("Inside move until white")
+    motor_pair.move(motor_pair.PAIR_1, steer, velocity=speed, acceleration=100)
+    wait_for_right_color(1)
     if stop: motor_pair.stop(motor_pair.PAIR_1)
     print("Done with move until white")
 
@@ -115,7 +143,7 @@ async def gyro_in_place_turn_for_decidegrees(decidegrees):
 def follow_forever():
     return True
 
-def follow_angle_for_distance(angle, distance_to_cover, speed=200, steering_proportion_fatcor=9):
+def follow_angle_for_distance(angle, distance_to_cover, speed=200, steering_proportion_factor=9):
     # get initial reading from left motor
     initial_position = abs(motor.relative_position(port.A))
     # print(initial_position)
@@ -126,28 +154,19 @@ def follow_angle_for_distance(angle, distance_to_cover, speed=200, steering_prop
         distance_covered = current_position - initial_position
         if distance_covered < 0 : distance_covered = distance_covered * -1
         current_yaw = motion_sensor.tilt_angles()[0]
-        # print("current_yaw = {}".format(current_yaw))
-        # if current_yaw < angle:
-        #    # steer slightly to the right
-        #    motor_pair.move(motor_pair.PAIR_1, int(-1000/(angle - current_yaw)))
-        # elif current_yaw > angle:
-        #    motor_pair.move(motor_pair.PAIR_1, int(1000/(angle - current_yaw)))
-        # else:
-        #    motor_pair.move(motor_pair.PAIR_1, angle)
-        # print(current_yaw)
         if abs(current_yaw) != abs(angle):
             # The reason we are dividing by 18 is this:
             # The range of steering (Difference between power to be given to two wheels) is -100 to 100 (total range of <200>)
             # Yaw angle range is -180 to +179, that is 360, or <3600> in decidegrees
             # Thus 3600 / 200 = 18- So steering is adjusted by a factor of 18
             # So if yaw is off by 18 decidegrees (about 1.8 or 2 degress), a steering will be adjusted by a factor of 1 (18)
-            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_factor ), velocity=speed)
 
     motor_pair.stop(motor_pair.PAIR_1)
     print("Total distance travelled = ", distance_covered)
     print("Gyro follow angle for distance DONE")
 
-def follow_angle_for_left_color_black(angle, speed=200, steering_proportion_fatcor=9):
+def follow_angle_for_left_color_black(angle, speed=200, steering_proportion_factor=9):
     print("follow_angle_for_left_color_black start")
 
     # get initial reading from left color sensor
@@ -158,13 +177,13 @@ def follow_angle_for_left_color_black(angle, speed=200, steering_proportion_fatc
         current_yaw = motion_sensor.tilt_angles()[0]
         # print(current_yaw)
         if abs(current_yaw) != abs(angle):
-            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_factor ), velocity=speed)
         cs_left = color_sensor.reflection(port.D)
 
     motor_pair.stop(motor_pair.PAIR_1)
     print("follow_angle_for_left_color_black DONE")
 
-def follow_angle_for_left_color_white(angle, speed=200, steering_proportion_fatcor=9):
+def follow_angle_for_left_color_white(angle, speed=200, steering_proportion_factor=9):
     print("follow_angle_for_left_color_white start")
 
     # get initial reading from left color sensor
@@ -175,13 +194,13 @@ def follow_angle_for_left_color_white(angle, speed=200, steering_proportion_fatc
         current_yaw = motion_sensor.tilt_angles()[0]
         # print(current_yaw)
         if abs(current_yaw) != abs(angle):
-            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_factor ), velocity=speed)
         cs_left = color_sensor.reflection(port.D)
 
     motor_pair.stop(motor_pair.PAIR_1)
     print("follow_angle_for_left_color_white DONE")
 
-def follow_angle_for_right_color_black(angle, speed=200, steering_proportion_fatcor=9):
+def follow_angle_for_right_color_black(angle, speed=200, steering_proportion_factor=9):
     print("follow_angle_for_right_color_black start")
 
     # get initial reading from right color sensor
@@ -192,13 +211,13 @@ def follow_angle_for_right_color_black(angle, speed=200, steering_proportion_fat
         current_yaw = motion_sensor.tilt_angles()[0]
         # print(current_yaw)
         if abs(current_yaw) != abs(angle):
-            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_factor ), velocity=speed)
         cs_right = color_sensor.reflection(port.F)
 
     motor_pair.stop(motor_pair.PAIR_1)
     print("follow_angle_for_right_color_black DONE")
 
-def follow_angle_for_right_color_white(angle, speed=200, steering_proportion_fatcor=9):
+def follow_angle_for_right_color_white(angle, speed=200, steering_proportion_factor=9):
     print("follow_angle_for_right_color_white start")
 
     # get initial reading from left color sensor
@@ -209,7 +228,7 @@ def follow_angle_for_right_color_white(angle, speed=200, steering_proportion_fat
         current_yaw = motion_sensor.tilt_angles()[0]
         # print(current_yaw)
         if abs(current_yaw) != abs(angle):
-            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_fatcor ), velocity=speed)
+            motor_pair.move(motor_pair.PAIR_1, int ((current_yaw - angle) / steering_proportion_factor ), velocity=speed)
         cs_right = color_sensor.reflection(port.F)
 
     motor_pair.stop(motor_pair.PAIR_1)
@@ -236,13 +255,30 @@ async def runA():
     pivot_gyro_turn(80, 0, 900, True)
     #sys.exit("Finished")
 
-async def runA():
+async def runG():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+    # move horizontal rack to right to avoid collision with camera
+    motor.run_for_degrees(port.B, 600, 500) # move rack left
+    motion_sensor.reset_yaw(0)
+    runloop.sleep_ms(1000)
+    move_until_right_black(0, -200, 0, True)
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(12), speed=150)
+    # move horizontal rack to left to engage with the camera
+    await motor.run_for_degrees(port.B, 600, -500) # move rack left
+    # pull camera and submarine so that submarine is out of its space
+    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=150)
+    # move camera into the target area
+    await motor.run_for_degrees(port.B, 660, 500) # move rack left
+    # push rolling camera lever down
+    await motor.run_for_degrees(port.C, 500, 500) # move rack down
+    # disengage from the orange lever
+    await motor.run_for_degrees(port.C, 500, -500) # move rack up
+    # disengage from the camera
+    motor.run_for_degrees(port.B, 100, -500) # move rack right
+    move_until_right_black(0, -200, 0, True)
 
-    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(20), 0)
-    #spin_gyro_turn(100, 50, 90, True)
-    pivot_gyro_turn(80, 0, 900, True)
-    #sys.exit("Finished")
+
+
 
 async def runD():
     print("Inside runD")
@@ -293,4 +329,4 @@ async def runD():
 
     print("Done with runD")
 
-runloop.run(runD())
+runloop.run(runG())
