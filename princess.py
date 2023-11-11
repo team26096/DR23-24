@@ -252,8 +252,10 @@ async def runD():
     # initialize motor pair
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     # reset yaw to 0
-    motion_sensor.set_yaw_face(motion_sensor.FRONT)
+    # motion_sensor.set_yaw_face(motion_sensor.FRONT)
     motion_sensor.reset_yaw(0)
+    # sleep to ensure drop off is complete
+    runloop.sleep_ms(1000)
     # move robot to approach audience drop off with checkpoints along the way
     await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(34), speed=300)
     await gyro_assisted_move(0, follow_angle_for_right_color_white, speed=200)
@@ -270,24 +272,24 @@ async def runD():
     pivot_gyro_turn(0, -80, 42, True)
     # move horizontal rack to right to align with lights and sound
     motor.run_for_degrees(port.B, 500, 500)
-    # reset yaw to 0
-    motion_sensor.set_yaw_face(motion_sensor.FRONT)
-    motion_sensor.reset_yaw(0)
+
     # move forwward to push hologram performer lever and complete the mission
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=80)
+    await gyro_assisted_move(-420, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=80)
+
+    # Rotate left motor anti clockwise to flick the lever of speaker lights and sound
+    motor.run_for_degrees(port.C, -200, 500)
+
     # move horizontal rack left to complete sound mixer and align with lights lever
     await motor.run_for_degrees(port.B, 600, -250)
 
     # move robot backward to pull light lever
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=-80)
+    await gyro_assisted_move(-420, follow_angle_for_distance, distance_to_cover=degreesForDistance(15), speed=-80)
+
     # align with hologram performer
-    pivot_gyro_turn(100, 0, 50, True)
-    # reset yaw to 0
-    motion_sensor.set_yaw_face(motion_sensor.FRONT)
-    motion_sensor.reset_yaw(0)
-    runloop.sleep_ms(500)
+    pivot_gyro_turn(100, 0, 70, True)
+
     # go back to base
-    await gyro_assisted_move(0, follow_angle_for_distance, distance_to_cover=degreesForDistance(55), speed=100)
+    await gyro_assisted_move(-700, follow_angle_for_distance, distance_to_cover=degreesForDistance(55), speed=100)
 
     print("Done with runD")
 
