@@ -325,19 +325,19 @@ async def runD():
     runloop.sleep_ms(1000)
     # move robot to approach audience drop off with checkpoints along the way
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_right_white)
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_right_black)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-3, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-3, sleep_time=0, follow_for=follow_for_right_white)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-3, sleep_time=0, follow_for=follow_for_right_black)
 
     # move forward to complete audience drop off
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=100, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-3, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(18)))
 
     # sleep to ensure drop off is complete
     runloop.sleep_ms(250)
     # move robot backward to align with hologram performer
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-100, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(10)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-100, target_angle=-3, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(12)))
 
     # align with hologram performer
     await pivot_gyro_turn(0, -80, 42, True)
@@ -348,22 +348,25 @@ async def runD():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=80, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
 
-    # Rotate left motor anti clockwise to flick the lever of speaker lights and sound
-    motor.run_for_degrees(port.C, -200, 500)
+    # Rotate left motor anti clockwise to flick the lever of sound speaker 
+    motor.run_for_degrees(port.C, -100, 200)
 
-    # move horizontal rack left to complete sound mixer and align with lights lever
-    await motor.run_for_degrees(port.B, 600, -250)
+    # move horizontal rack left to complete and align with lights lever
+    await motor.run_for_degrees(port.B, 600, -400)
 
     # move robot backward to pull light lever
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-80, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(10)))
 
     # align with hologram performer
-    await pivot_gyro_turn(100, 0, 70, True)
+    await pivot_gyro_turn(-300, 0, -20, True)
+
+    # Rotate left motor anti clockwise to flick the lever of sound speaker
+    motor.run_for_degrees(port.C, 100, 200)
 
     # go back to base
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=100, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(55)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
 
 
     print("Done with runD")
@@ -383,4 +386,4 @@ async def testGyro():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(120)))
 
-runloop.run(runG())
+runloop.run(runD())
