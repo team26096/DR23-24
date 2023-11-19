@@ -289,14 +289,14 @@ async def runG():
 
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(21))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(17))
  
     # turn 90 degrees and position to get out of base
     await pivot_gyro_turn(100, -100, 90, True)
 
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(10))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
 
     # get out of base and look for left color sensor on black near the light show
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=90, sleep_time=0, follow_for=follow_for_left_black)
@@ -306,7 +306,7 @@ async def runG():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4)))
 
     # push rolling camera lever down
-    await motor.run_for_degrees(port.C, 660, 300) # move rack down
+    await motor.run_for_degrees(port.C, 750, 300) # move rack down
 
     # sleep to stabilize vertical rack
     runloop.sleep_ms(500)
@@ -322,7 +322,7 @@ async def runG():
     await pivot_gyro_turn(0, 100, 90, True)
 
     # disengage from the orange lever
-    await motor.run_for_degrees(port.C, 660, -500) # move rack up
+    await motor.run_for_degrees(port.C, 750, -500) # move rack up
 
     # align to drop audience members
     # position = abs(motor.relative_position(port.A))
@@ -338,10 +338,23 @@ async def runG():
 
     # go forward to align with rolling camera
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(35)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(50)))
 
     # bring rack down to engage with rolling camera
-    await motor.run_for_degrees(port.C, 660, 300) # move rack down
+    await motor.run_for_degrees(port.C, 750, 300) # move rack down
+
+    # go back to push rolling camera
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(30)))
+   
+    # bring rack up to disengage with rolling camera
+    await motor.run_for_degrees(port.C, 750, -300) # move rack down
+
+    # go forward to right base
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(65)))
+
+
 
 async def runD():
     print("Inside runD")
