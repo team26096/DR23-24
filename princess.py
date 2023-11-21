@@ -289,10 +289,10 @@ async def runG():
 
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(17))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16.6))
  
     # turn 90 degrees and position to get out of base
-    await pivot_gyro_turn(100, -100, 90, True)
+    await pivot_gyro_turn(80, -80, 85, True)
 
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
@@ -303,57 +303,55 @@ async def runG():
 
     # move back little to align with camera
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4.5)))
 
     # push rolling camera lever down
-    await motor.run_for_degrees(port.C, 750, 300) # move rack down
+    await motor.run_for_degrees(port.C, 800, 300) # move rack down
 
     # sleep to stabilize vertical rack
     runloop.sleep_ms(500)
 
     # move back to pull camera and submarine
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-150, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(10)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4)))
 
     # turn right to pull camera in the target area
-    await pivot_gyro_turn(0, -100, 120, True)
+    await pivot_gyro_turn(0, -100, 125, True)
 
     # turn left to the original position
-    await pivot_gyro_turn(0, 100, 90, True)
+    await pivot_gyro_turn(0, 80, 90, True)
 
     # disengage from the orange lever
-    await motor.run_for_degrees(port.C, 750, -500) # move rack up
-
-    # align to drop audience members
-    # position = abs(motor.relative_position(port.A))
-    # await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=150, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(12)))
+    await motor.run_for_degrees(port.C, 800, -500) # move rack up
 
     # move forward to drop audience member and expert
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_left_black)
 
     # Drop audience members and expert to target areas
-    await motor.run_for_degrees(port.B, 100, -200)
-    await motor.run_for_degrees(port.B, 300, 200)
-    await motor.run_for_degrees(port.B, 300, -200)
+    await motor.run_for_degrees(port.B, 200, -300)
+    await motor.run_for_degrees(port.B, 400, 300)
+    await motor.run_for_degrees(port.B, 400, -300)
 
     # go forward to align with rolling camera
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(50)))
 
+    # sleep to stabilize the rack
+    runloop.sleep_ms(500)
+
     # bring rack down to engage with rolling camera
-    await motor.run_for_degrees(port.C, 750, 300) # move rack down
+    await motor.run_for_degrees(port.C, 720, 300) # move rack down
 
     # go back to push rolling camera
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(30)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(20)))
    
     # bring rack up to disengage with rolling camera
-    await motor.run_for_degrees(port.C, 750, -300) # move rack down
+    await motor.run_for_degrees(port.C, 500, -400) # move rack down
 
     # go forward to right base
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(65)))
-
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=110, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
 
 
 async def runD():
