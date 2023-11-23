@@ -508,5 +508,39 @@ async def runC():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=-135, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
 
+async def runE():
+    print("Inside runE")
 
-runloop.run(runC())
+    # initialize motor pair
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.TOP)
+    motion_sensor.reset_yaw(0)
+    # sleep to ensure drop off is complete
+    runloop.sleep_ms(1000)
+    # move robot forward to start going to craft creator
+    motor.reset_relative_position(port.A, 0)
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(21)))
+
+    # Turn left to align with craft creator
+    await pivot_gyro_turn(-100, 100, -45, True)
+
+    # move robot forward to start going to craft creator
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(6)))
+
+    # lift Izzy
+    await motor.run_for_degrees(port.C, 150, -50, stop=motor.BRAKE, acceleration=200)
+    
+    # move robot forward to latch onto craft creator lid
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(18)))
+
+    
+    # move robot backward to lift craft creator lid
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-150, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(35)))
+    await pivot_gyro_turn(100, -100, 45, True)
+
+runloop.run(runE())
