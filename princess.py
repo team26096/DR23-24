@@ -106,7 +106,7 @@ async def gyro_assisted_move(angle, stop_function, **kwargs):
 def follow_for_forever():
     return True
 
-def follow_for_distance(initial_position=0, 
+def follow_for_distance(initial_position=0,
                         distance_to_cover=0):
     #current_position = abs((motor.relative_position(port.A) + motor.relative_position(port.E))/2)
     current_position = abs(motor.relative_position(port.A))
@@ -141,12 +141,12 @@ def follow_for_right_white():
     else:
         return True
 
-async def follow_gyro_angle(kp, 
-                            ki, 
-                            kd, 
-                            speed, 
-                            target_angle, 
-                            sleep_time, 
+async def follow_gyro_angle(kp,
+                            ki,
+                            kd,
+                            speed,
+                            target_angle,
+                            sleep_time,
                             follow_for, **kwargs):
     print("follow_gyro_angle START")
     # get initial reading from left motor
@@ -171,7 +171,7 @@ async def follow_gyro_angle(kp,
 
     motor_pair.stop(motor_pair.PAIR_1)
     print("follow_gyro_angle END")
-    
+
 """
 This function turns the gyro in place to specified deci degrees (-1800 to 1800)
 This is achieved by setting a steering value of -100 or + 100 based on which
@@ -274,7 +274,7 @@ async def runA():
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
-    
+
 async def runG():
     # define motor pair
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
@@ -290,7 +290,7 @@ async def runG():
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16.6))
- 
+
     # turn 90 degrees and position to get out of base
     await pivot_gyro_turn(80, -80, 85, True)
 
@@ -345,7 +345,7 @@ async def runG():
     # go back to push rolling camera
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(20)))
-   
+
     # bring rack up to disengage with rolling camera
     await motor.run_for_degrees(port.C, 500, -400) # move rack down
 
@@ -389,7 +389,7 @@ async def runD():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=80, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
 
-    # Rotate left motor anti clockwise to flick the lever of sound speaker 
+    # Rotate left motor anti clockwise to flick the lever of sound speaker
     motor.run_for_degrees(port.C, -100, 200)
 
     # move robot backward to align with lights
@@ -431,4 +431,82 @@ async def testGyro():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(120)))
 
-runloop.run(runG())
+async def runC():
+    print("Inside runC")
+    # move horizontal rack to left to avoid hitting holagram performer
+    motor.run_for_degrees(port.C, 700, -500) # move rack left
+
+    # initialize motor pair
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.TOP)
+    motion_sensor.reset_yaw(0)
+    # sleep to ensure drop off is complete
+    runloop.sleep_ms(1000)
+    # move robot forward to start going to augmented reality
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_right_white)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_right_black)
+
+    # turning to go towards augmented reality
+    await pivot_gyro_turn(0, 100, -90, True)
+
+    # move backward to hook on to augmented reality
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(20)))
+
+    # go forward till right sensor see's white checkpoint close to augmented reality
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=-90, sleep_time=0, follow_for=follow_for_right_white)
+
+    # move horizontal rack to right to align with augmented reality hook
+    await motor.run_for_degrees(port.C, 700, 500) # move rack right
+
+    # move backward to hook on to augmented reality
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
+
+    # move horizontal rack to left to pull augmented reality lever
+    await motor.run_for_degrees(port.C, 700, -500) # move rack left
+    
+    # move backward to complete augmented reality
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(14)))
+
+    # move forward to complete augmented reality
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(29)))
+
+    # turning right to align for anna and audience member drop of
+    await pivot_gyro_turn(100, 0, -30, True)
+
+    # move forward to drop anna and audience member
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-30, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
+
+    # move backward to leave anna and audience member
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-30, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
+
+    # turning back so robot can go back to base
+    await pivot_gyro_turn(0, 100, -90, True)
+
+    # move horizontal rack to right to avoid hitting light show
+    await motor.run_for_degrees(port.C, 250, 500) # move rack right
+
+    # move forward to drop anna and audience member
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(63)))
+
+    # turning back so robot can go back to base
+    await pivot_gyro_turn(0, 100, -135, True)
+
+    # move horizontal rack to left to avoid hitting 3d cinema
+    motor.run_for_degrees(port.C, 350, -500) # move rack left
+
+    # move forward to drop anna and audience member
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=-135, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
+
+
+runloop.run(runC())
