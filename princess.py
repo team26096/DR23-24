@@ -543,4 +543,36 @@ async def runE():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-150, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(35)))
     await pivot_gyro_turn(100, -100, 45, True)
 
-runloop.run(runE())
+async def runF():
+    print("Inside runF")
+
+    # initialize motor pair
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.TOP)
+    motion_sensor.reset_yaw(0)
+    # sleep for 1 second
+    runloop.sleep_ms(1000)
+    # move robot forward to start going to sound mixer
+    motor.reset_relative_position(port.A, 0)
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(14.5)))
+
+    # Turn right to align with sound mixer
+    await pivot_gyro_turn(100, -100, 40, True)
+
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=125, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(30)))
+
+    # Turn right to align with sound mixer
+    await pivot_gyro_turn(40, -40, 47, True)
+
+    # sleep for 1 second
+    runloop.sleep_ms(1000)
+
+    # come back to base
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(43)))
+
+
+runloop.run(runF())
