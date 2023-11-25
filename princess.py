@@ -108,7 +108,6 @@ def follow_for_forever():
 
 def follow_for_distance(initial_position=0,
                         distance_to_cover=0):
-    #current_position = abs((motor.relative_position(port.A) + motor.relative_position(port.E))/2)
     current_position = abs(motor.relative_position(port.A))
     distance_covered = current_position - initial_position
     if distance_covered < 0 : distance_covered = distance_covered * -1
@@ -169,7 +168,7 @@ async def follow_gyro_angle(kp,
         # kp value should be +ve for forward movement (postive speed value), and -ve for backward movement (negative speed value)
         motor_pair.move(motor_pair.PAIR_1, int(steering_value), velocity=speed)
 
-    motor_pair.stop(motor_pair.PAIR_1)
+    motor_pair.stop(motor_pair.PAIR_1, stop=motor.HOLD)
     print("follow_gyro_angle END")
 
 """
@@ -265,7 +264,7 @@ def follow_angle_for_right_color_white(angle, speed=200, steering_proportion_fac
     print("follow_angle_for_right_color_white DONE")
 
 # Main programs --------------------
-async def runA():
+async def runSix():
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
     # reset yaw to 0
     motion_sensor.set_yaw_face(motion_sensor.TOP)
@@ -275,7 +274,7 @@ async def runA():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
 
-async def runG():
+async def runTwo():
     # define motor pair
     motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
 
@@ -289,9 +288,9 @@ async def runG():
 
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16.6))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
-    # turn 90 degrees and position to get out of base
+    # turn 85 degrees and position to get out of base
     await pivot_gyro_turn(80, -80, 85, True)
 
     # go forward and position to turn 90 degrees
@@ -313,28 +312,28 @@ async def runG():
 
     # move back to pull camera and submarine
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(5.5)))
 
     # turn right to pull camera in the target area
     await pivot_gyro_turn(0, -100, 125, True)
 
     # turn left to the original position
-    await pivot_gyro_turn(0, 80, 90, True)
+    await pivot_gyro_turn(0, 84, 80, True)
 
     # disengage from the orange lever
     await motor.run_for_degrees(port.C, 800, -500) # move rack up
 
     # move forward to drop audience member and expert
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_left_black)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=84, sleep_time=0, follow_for=follow_for_left_black)
 
     # Drop audience members and expert to target areas
-    await motor.run_for_degrees(port.B, 200, -300)
-    await motor.run_for_degrees(port.B, 400, 300)
-    await motor.run_for_degrees(port.B, 400, -300)
+    await motor.run_for_degrees(port.B, 200, -400)
+    await motor.run_for_degrees(port.B, 400, 400)
+    await motor.run_for_degrees(port.B, 400, -400)
 
     # go forward to align with rolling camera
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(50)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(53)))
 
     # sleep to stabilize the rack
     runloop.sleep_ms(500)
@@ -344,17 +343,16 @@ async def runG():
 
     # go back to push rolling camera
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(20)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(23)))
 
     # bring rack up to disengage with rolling camera
     await motor.run_for_degrees(port.C, 500, -400) # move rack down
 
     # go forward to right base
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=110, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=125, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(70)))
 
-
-async def runD():
+async def runFour():
     print("Inside runD")
     # move horizontal rack to left to avoid collision with lights and sound
     motor.run_for_degrees(port.B, 500, -500) # move rack left
@@ -413,7 +411,6 @@ async def runD():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-500, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(58)))
 
-
     print("Done with runD")
 
 async def testGyro():
@@ -431,7 +428,7 @@ async def testGyro():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(120)))
 
-async def runC():
+async def runFive():
     print("Inside runC")
     # move horizontal rack to left to avoid hitting holagram performer
     motor.run_for_degrees(port.C, 700, -500) # move rack left
@@ -508,7 +505,7 @@ async def runC():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=-135, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
 
-async def runE():
+async def runThree():
     print("Inside runE")
 
     # initialize motor pair
@@ -543,7 +540,7 @@ async def runE():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(35)))
     await pivot_gyro_turn(150, -150, 60, True)
 
-async def runF():
+async def runOne():
     print("Inside runF")
 
     # initialize motor pair
@@ -574,5 +571,46 @@ async def runF():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(43)))
 
+def doPortCheck():
+    # check port status
+    if device.ready(port.A):
+        print("Port A is ready")
+    else:
+        print("Port A is NOT ready")
+        return False
 
-runloop.run(runE())
+    if device.ready(port.B):
+        print("Port B is ready")
+    else:
+        print("Port B is NOT ready")
+        return False
+
+    if device.ready(port.C):
+        print("Port C is ready")
+    else:
+        print("Port C is NOT ready")
+        return False
+
+    if device.ready(port.D):
+        print("Port D is ready")
+    else:
+        print("Port D is NOT ready")
+        return False
+
+    if device.ready(port.E):
+        print("Port E is ready")
+    else:
+        print("Port E is NOT ready")
+        return False
+
+    if device.ready(port.F):
+        print("Port F is ready")
+    else:
+        print("Port F is NOT ready")
+        return False
+
+    return True
+
+light.color(light.POWER, color.MAGENTA)
+light_matrix.write("2")
+runloop.run(runTwo())
