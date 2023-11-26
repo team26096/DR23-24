@@ -521,14 +521,14 @@ async def runThree():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(21)))
 
     # Turn left to align with craft creator
-    await pivot_gyro_turn(-100, 100, -45, True)
+    await pivot_gyro_turn(-100, 100, -42, True)
 
     # move robot forward to start going to craft creator
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(6)))
 
     # lift Izzy
-    await motor.run_for_degrees(port.C, 150, -100, stop=motor.BRAKE, acceleration=200)
+    await motor.run_for_degrees(port.C, 4000, 1000, stop=motor.HOLD)
     
     # move robot forward to latch onto craft creator lid
     position = abs(motor.relative_position(port.A))
@@ -612,5 +612,5 @@ def doPortCheck():
     return True
 
 light.color(light.POWER, color.MAGENTA)
-light_matrix.write("2")
-runloop.run(runTwo())
+light_matrix.write("3")
+runloop.run(runThree())
