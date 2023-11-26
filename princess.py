@@ -388,11 +388,14 @@ async def runFour():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=80, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
 
     # Rotate left motor anti clockwise to flick the lever of sound speaker
-    motor.run_for_degrees(port.C, -100, 200)
+    await motor.run_for_degrees(port.C, -125, 200)
 
     # move robot backward to align with lights
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-150, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(2))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-150, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(1.5))
+
+    # Bring lever back to avoid hitting Noah and audience member
+    motor.run_for_degrees(port.C, 100, 200)
 
     # turn left to complete alignment with lights lever
     await pivot_gyro_turn(-150, 0, 30, True)
@@ -403,9 +406,6 @@ async def runFour():
 
     # align with hologram performer
     await pivot_gyro_turn(-300, 0, -20, True)
-
-    # Rotate left motor anti clockwise to flick the lever of sound speaker
-    motor.run_for_degrees(port.C, 100, 200)
 
     # go back to base
     position = abs(motor.relative_position(port.A))
@@ -556,20 +556,75 @@ async def runOne():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(14.5)))
 
     # Turn right to align with sound mixer
-    await pivot_gyro_turn(100, -100, 40, True)
+    await pivot_gyro_turn(100, -100, 43, True)
 
+    motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=125, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(30)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=125, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(27)))
 
     # Turn right to align with sound mixer
     await pivot_gyro_turn(40, -40, 47, True)
 
-    # sleep for 1 second
-    runloop.sleep_ms(1000)
+    # sleep for 0.5 second
+    await runloop.sleep_ms(500)
+
+    # Turn right to get into Noah's hoop
+    await pivot_gyro_turn(10, -10, 55, True)
 
     # come back to base
+    motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(43)))
+
+    # move motor B to get it in position for runonept2
+    await motor.run_for_degrees(port.B, 3000, 1100)
+
+async def runOnePt2():
+    # go straight to get out of base
+    motor.reset_relative_position(port.A, 0)
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
+
+    # go forward even more to get a checkpoint with the left color sensor on white and then black to know our position
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=4, sleep_time=0, follow_for=follow_for_left_white)
+    #await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=4, sleep_time=0, follow_for=follow_for_left_black)
+
+    # spin turn to right at 45 degrees
+    await pivot_gyro_turn(100, -100, 45, True)
+
+    # go forward for 4 cm
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(14)))
+
+    # go backward to drop audience memebrs
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(2)))
+
+    # move motor B to get it in position to pick up Sam later in the run
+    await motor.run_for_degrees(port.B, 725, -1100)
+
+    # spin turn to position with theatre scene change
+    await pivot_gyro_turn(-100, 0, -40, True)
+
+    # push forward once to complete theatre scene change
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=150, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(10)))
+
+    # move motor B to get it in position to pick up Sam
+    await motor.run_for_degrees(port.B, 2500, -1100)
+
+    # reset motor for the relative position
+    motor.reset_relative_position(port.A, 0)
+    # come back 5 degrees
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(3)))
+
+    # pivot turn
+    await pivot_gyro_turn(0,-200, 25, True)
+
+    # go back to base
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=25, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(65)))
 
 def doPortCheck():
     # check port status
@@ -612,5 +667,5 @@ def doPortCheck():
     return True
 
 light.color(light.POWER, color.MAGENTA)
-light_matrix.write("3")
-runloop.run(runThree())
+light_matrix.write("1")
+runloop.run(runOne())
