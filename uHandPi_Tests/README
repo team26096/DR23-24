@@ -1,0 +1,39 @@
+# DR23-24-uHandPi
+
+## Overview
+
+uHandPi is Raspberry Pi Robotic Hand with AI Vision.
+
+This repository contains scripts and snippets that work with libraries provided by uHandPi on the board.
+The primary library is LeArm.py, which is a Python library for controlling the robotic arm.
+
+## Database Files
+
+Actions to be performed by the robotic arm are stored in database files.
+Database files are built using SQLLite3.
+
+The format is very simple. There is only one table called ActionGroup. The table has following columns and data types:
+
+"Index" INTEGER NOT NULL UNIQUE
+"Time" INT
+"Servo1" INT
+"Servo2" INT
+"Servo3" INT
+"Servo4" INT
+"Servo5" INT
+"Servo6" INT
+
+Time is the time to be taken for the transition in milliseconds.This should typically range from 500 to 5000.
+
+Each row represents positions of all servos and time to get into that position 
+
+
+
+All Servos have a position range from 500 to 2500. This value translates to different functions for different servos.
+
+- For the thumb (Servo1), 500 represents fully stretched out and 2500 represents completely closed.
+- For the index finger (Servo2), middle finger (Servo3), ring finger (Servo4) and little finger (Servo5), 500 represents fully closed and 2500 represents fully stretched out.
+- Servo 6 is for the wrist that moves entire palm with the vision camera. 500 is used to turn it far left and 2500 is used for far right. To keep it in the center (facing you), use value 1500
+
+
+## 
