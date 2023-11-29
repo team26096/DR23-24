@@ -1,10 +1,9 @@
 # Imports --------------------
 from hub import light_matrix, button, motion_sensor, light, sound, port
-#from app import sound, music
 import color, color_sensor, device, motor, motor_pair, orientation, runloop
 import sys
-from math import *
-from time import time
+import time
+
 
 # Global contants --------------------
 # Circumference of the drive wheel in cm
@@ -132,15 +131,7 @@ def doInit():
 # run 1 part 1 code
 async def runOnePt1():
     print("runOnePt1 -- START")
-    # # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # print("runOnePt1: reset gyro to 0.. waiting to stabilize")
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
+    # initialize motor pair
     doInit()
 
     #print("Gyro stable")
@@ -188,17 +179,6 @@ async def runOnePt1():
 async def runOnePt2():
     print("runOnePt2 -- START")
     # # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # # print("runOnePt2: reset gyro to 0.. waiting to stabilize")
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
-    #print("Gyro stable")
-    # sleep for 1 second to allow gyro to stabilize
-    # runloop.sleep_ms(1000)
     doInit()
 
     # go straight to get out of base
@@ -252,86 +232,79 @@ async def runOnePt2():
 # run 2 code
 async def runTwo():
     print("runTwo -- START")
-    # # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # # print("runOnePt2: reset gyro to 0.. waiting to stabilize")
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
-    # #print("Gyro stable")
+    # initialize motor pair and reset yaw
     doInit()
 
-    # intialize the motor relative position
-    motor.reset_relative_position(port.A, 0)
-
     # go forward and position to turn 90 degrees
+    motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     # turn 85 degrees and position to get out of base
     await pivot_gyro_turn(80, -80, 85, True)
 
+    # start pushing rolling camera lever down
+    motor.run_for_degrees(port.C, 500, 300) # move rack down
+
     # go forward and position to turn 90 degrees
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     # get out of base and look for left color sensor on black near the light show
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=90, sleep_time=0, follow_for=follow_for_left_black)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=90, sleep_time=0, follow_for=follow_for_left_black)
 
     # move back little to align with camera
+    motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4.5)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(4.6)))
 
     # push rolling camera lever down
-    await motor.run_for_degrees(port.C, 800, 300) # move rack down
-
-    # sleep to stabilize vertical rack
-    runloop.sleep_ms(500)
+    await motor.run_for_degrees(port.C, 350, 300) # move rack down
 
     # move back to pull camera and submarine
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(5.5)))
+    motor.reset_relative_position(port.A, 0)
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(5)))
 
     # turn right to pull camera in the target area
-    await pivot_gyro_turn(0, -100, 125, True)
+    await pivot_gyro_turn(0, -80, 125, True)
+
+    # disengage from camera
+    await motor.run_for_degrees(port.C, 800, -1000) # move rack up
 
     # turn left to the original position
     await pivot_gyro_turn(0, 84, 80, True)
-
-    # disengage from the orange lever
-    await motor.run_for_degrees(port.C, 800, -500) # move rack up
 
     # move forward to drop audience member and expert
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=84, sleep_time=0, follow_for=follow_for_left_black)
 
     # Drop audience members and expert to target areas
-    await motor.run_for_degrees(port.B, 200, -400)
-    await motor.run_for_degrees(port.B, 400, 400)
-    await motor.run_for_degrees(port.B, 400, -400)
+    await motor.run_for_degrees(port.B, 200, -500)
+    await motor.run_for_degrees(port.B, 400, 500)
+    await motor.run_for_degrees(port.B, 400, -500)
 
     # go forward to align with rolling camera
+    motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(53)))
-
-    # sleep to stabilize the rack
-    runloop.sleep_ms(500)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(52)))
 
     # bring rack down to engage with rolling camera
-    await motor.run_for_degrees(port.C, 720, 300) # move rack down
+    await motor.run_for_degrees(port.C, 700, 1000) # move rack down
 
     # go back to push rolling camera
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(23)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=96, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
 
     # bring rack up to disengage with rolling camera
-    await motor.run_for_degrees(port.C, 500, -400) # move rack down
+    await motor.run_for_degrees(port.C, 700, -1000) # move rack up
 
     # go forward to right base
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=125, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(70)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=125, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
+
+    # go forward to right base
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=100, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(35)))
 
     print("run2 -- END")
 
@@ -339,16 +312,6 @@ async def runTwo():
 async def runThree():
     print("runThree -- START")
     # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
-    #print("Gyro stable")
-    # sleep to ensure drop off is complete
-    #runloop.sleep_ms(1000)
     doInit()
 
     # move robot forward to start going to craft creator
@@ -380,16 +343,6 @@ async def runThree():
 async def runFour():
     print("runFour -- START")
     # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
-    #print("Gyro stable")
-    # sleep to ensure drop off is complete
-    # runloop.sleep_ms(1000)
     doInit()
 
     # move horizontal rack to left to avoid collision with lights and sound
@@ -448,16 +401,6 @@ async def runFour():
 async def runFive():
     print("runFive -- START")
     # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
-    #print("Gyro stable")
-    # sleep to ensure drop off is complete
-    # runloop.sleep_ms(1000)
     doInit()
 
     # move horizontal rack to left to avoid hitting holagram performer
@@ -532,19 +475,10 @@ async def runFive():
 # run 6 code
 async def runSix():
     print("runSix -- START")
-    # # initialize motor pair
-    # motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
-    # # reset yaw to 0
-    # motion_sensor.set_yaw_face(motion_sensor.TOP)
-    # motion_sensor.reset_yaw(0)
-    # while motion_sensor.stable() == False:
-    #     await runloop.sleep_ms(100)
-    #     print("Gyro NOT stable")
-    #print("Gyro stable")
-    # sleep to ensure drop off is complete
-    #runloop.sleep_ms(1000)
+    # initialize motor pair
     doInit()
 
+    # go forward to approach 3D Cinema
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
@@ -608,7 +542,6 @@ async def testGyro():
     
 light.color(light.POWER, color.MAGENTA)
 light_matrix.write("0")
-start = time()
-runloop.run(runOnePt1())
-end = time()
-print("Total run 1 pt 1 time =" + str(end-start))
+start = time.ticks_ms()
+runloop.run(runTwo())
+print("Total run 1 pt 1 time =" + str(time.ticks_diff(time.ticks_ms(), start)/1000))
