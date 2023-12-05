@@ -280,12 +280,12 @@ async def runTwo():
     # Drop audience members and expert to target areas
     await motor.run_for_degrees(port.B, 200, -500)
     await motor.run_for_degrees(port.B, 400, 500)
-    await motor.run_for_degrees(port.B, 400, -500)
+    await motor.run_for_degrees(port.B, 300, -500)
 
     # go forward to align with rolling camera
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=83, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(49.4)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=84, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(49)))
 
     # bring rack down to engage with rolling camera
     await motor.run_for_degrees(port.C, 700, 1000) # move rack down
@@ -293,7 +293,7 @@ async def runTwo():
     # go back to push rolling camera
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=83, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=84, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
 
     # bring rack up to disengage with rolling camera
     await motor.run_for_degrees(port.C, 700, -1000) # move rack up
@@ -304,12 +304,10 @@ async def runTwo():
     # go forward to right base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=110, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=110, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
 
-    # go forward to right base
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=76, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(40)))
+    # turn to bring robot and attachment completely in base
+    await pivot_gyro_turn(-100, 100, -10, True)
 
     print("run2 -- END")
 
@@ -511,7 +509,7 @@ async def runFive():
     # move forward to drop anna and audience member
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=-160, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(60)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=-160, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(55)))
     print("runFive -- END")
 
 # run 6 code
