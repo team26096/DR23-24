@@ -160,17 +160,20 @@ async def runOnePt1():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-80, target_angle=47, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(1)))
 
     # Turn right to get into Noah's hoop
-    await pivot_gyro_turn(50, -50, 65, True)
+    await pivot_gyro_turn(50, -50, 68, True)
     # print("runOnePt1: angle at picking Noah: " + str(get_yaw_value()))
 
     # come back to base
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(44)))
+    # motor.reset_relative_position(port.A, 0)
+    # position = abs(motor.relative_position(port.A))
+    # await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(44)))
     # print("runOnePt1: motor A position after coming to base: " + str(motor.relative_position(port.A)))
 
+    # come back to base
+    motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(44), int(0), velocity=-300)
+
     # move motor B to get it in position for runonept2
-    await motor.run_for_degrees(port.B, 3000, 1100)
+    await motor.run_for_degrees(port.B, 3300, 1100)
     print("runOnePt1 -- END")
 
 # run 1 part 2 code
@@ -191,16 +194,16 @@ async def runOnePt2():
     # spin turn to right at 45 degrees
     await pivot_gyro_turn(100, -100, 45, True)
 
-    # go forward for 4 cm
+    # go forward for 20 degrees to get the audience members fully in skate park
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(14)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(20)))
 
     # go backward to drop audience memebrs
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(2)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(8)))
 
     # move motor B to get it in position to pick up Sam later in the run
-    motor.run_for_degrees(port.B, 755, -1100)
+    motor.run_for_degrees(port.B, 815, -1100)
 
     # spin turn to position with theatre scene change
     await pivot_gyro_turn(-100, 0, -40, True)
@@ -400,10 +403,10 @@ async def runFour():
     # move robot backward to pull light lever
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=28, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(10))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=28, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(12))
 
     # allow light lever to fall down, hence sleep
-    runloop.sleep_ms(250)
+    runloop.sleep_ms(500)
 
     # turn left to return to base
     await pivot_gyro_turn(-300, 0, -20, True)
