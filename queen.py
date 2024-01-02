@@ -58,13 +58,13 @@ def spin_gyro_turn(steer=100, speed=50, angle=90, stop=False):
 
 async def pivot_gyro_turn(left_speed=0, right_speed=50, angle=90, stop=False):
     motor_pair.move_tank(motor_pair.PAIR_1, left_speed, right_speed)
-    print("pivot_gyro_turn - " + "target angle=" + str(angle) + "current angle ="+ str(get_yaw_value()))
+    # print("pivot_gyro_turn - " + "target angle=" + str(angle) + "current angle ="+ str(get_yaw_value()))
     wait_for_yaw(angle=angle)
     if stop: motor_pair.stop(motor_pair.PAIR_1, stop=motor.HOLD)
 
 async def pivot_gyro_turn_abs(left_speed=0, right_speed=50, angle=90, stop=False):
     motor_pair.move_tank(motor_pair.PAIR_1, left_speed, right_speed)
-    print("pivot_gyro_turn - " + "target angle=" + str(angle) + "current angle ="+ str(get_yaw_value()))
+    # print("pivot_gyro_turn - " + "target angle=" + str(angle) + "current angle ="+ str(get_yaw_value()))
     wait_for_yaw_abs(angle=angle)
     if stop: motor_pair.stop(motor_pair.PAIR_1, stop=motor.HOLD)
 
@@ -155,10 +155,6 @@ def doInit():
     motion_sensor.set_yaw_face(motion_sensor.TOP)
     motion_sensor.reset_yaw(0)
     runloop.sleep_ms(1000)
-    # while motion_sensor.stable() == False:
-    #    runloop.sleep_ms(100)
-    #    print("Gyro NOT stable")
-    # #print("Gyro stable")
 
 # run onenew code
 async def runOne():
@@ -166,25 +162,27 @@ async def runOne():
     # reset gyro
     doInit()
 
+    # pivot turn to 21
+    await pivot_gyro_turn_abs(120, -120, 19, True)
+
     # go backward for 45 cm to get to theatre scene change
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=23, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(45))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=19, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(45))
 
-    # go back till left sensor is on black for a checkpoint towards theatre scene change
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=23, sleep_time=0, follow_for=follow_for_left_black)
+    # go back till right sensor is on black for a checkpoint towards theatre scene change
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=19, sleep_time=0, follow_for=follow_for_right_black)
 
     # turn around to get in position for theatre scene change
-    await pivot_gyro_turn(50, 0, 43, True)
+    await pivot_gyro_turn_abs(100, 0, 43, True)
 
     # go forward to look for a checkpoint near theatre scene change
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=43, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(3))
 
-    # go backward until right sensor is on black for a checkpoint for theatre scene change
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-100, target_angle=43, sleep_time=0, follow_for=follow_for_right_black)
-    sound.beep()
+    # go backward until left sensor is on black for a checkpoint for theatre scene change
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-100, target_angle=43, sleep_time=0, follow_for=follow_for_left_black)
 
     # go down to complete theatre scene change
     motor.run_for_degrees(port.C, 2100, 1000)
@@ -196,82 +194,81 @@ async def runOne():
     motor.run_for_degrees(port.C, 1500, -1000)
 
     # pivot turn with left wheel going reverse to get the hooks inside Sam
-    doInit()
-    await pivot_gyro_turn(-50, 0, -20, True)
+    await pivot_gyro_turn_abs(-100, 0, 20, True)
 
     # bring up motor B to pick up Sam
-    await motor.run_for_degrees(port.B, 2250, 1000)
+    await motor.run_for_degrees(port.B, 1000, 1000)
+    motor.run_for_degrees(port.B, 1150, 1000) # run the rest in parallel to next step
 
-    # turn to get away from theatre scene change
-    await pivot_gyro_turn(0, -50, 0, True)
-    sound.beep()
-    
     # pivot turn to go towards immersive experience
-    await pivot_gyro_turn(0, -100, 65, True)
+    await pivot_gyro_turn_abs(0, -200, 122, True)
 
     # go backwards
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(18))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=122, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     # turn to get in line for immersive experience
-    await pivot_gyro_turn(-50, 50, 47, True)
+    await pivot_gyro_turn_abs(-100, 100, 90, True)
 
     # go backwards pt.2
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=47, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(33))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(30))
 
     # bring the rack down to push the immersive experience
-    await motor.run_for_degrees(port.C, 1500, 1000)
+    await motor.run_for_degrees(port.C, 1550, 1050)
 
-    # sleep for 1 second
+    # sleep to make sure immersive experience doesn't bounce back
     runloop.sleep_ms(1000)
 
     # bring rack up to disengage with immersive experience
-    await motor.run_for_degrees(port.C, 1500, -1000)
+    await motor.run_for_degrees(port.C, 1000, -1000)
 
-    # turn around to avoid hitting light show
-    await pivot_gyro_turn(-50, 50, -13, True)
+    # turn around to drop audience member and anna to masterpiece
+    await pivot_gyro_turn_abs(-100, 100, 30, True)
 
-    # go backwards 
+    # bring the rack down
+    motor.run_for_degrees(port.C, 1740, 1000)
+
+    # go backwards
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-13, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=30, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(4))
 
     # turn around towards light show completly
-    await pivot_gyro_turn(-50, 50, -33, True)
-    
-    # bring the rack down
-    await motor.run_for_degrees(port.C, 1300, 1000)
+    await pivot_gyro_turn_abs(-100, 100, 0, True)
 
     # go forward
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-33, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
 
     # bring rack up to complete light show
-    await motor.run_for_degrees(port.C, 1450, -1000)
+    await motor.run_for_degrees(port.C, 1540, -1000)
 
     # go back to get the pieces fully in mastepiece
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-33, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(18))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16))
 
     # turn to get to base
-    await pivot_gyro_turn(50, -50, -10, True)
+    await pivot_gyro_turn_abs(100, -100, 36, True)
 
     # go forward to get Noah and go back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=-10, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(65))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=700, target_angle=36, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(65))
 
-    # # come back to base
+    # come back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=700, target_angle=26, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(60))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=700, target_angle=65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(45))
+    print("runOne -- End")
+
 
 async def runTwo():
+    print("runTwo -- Start")
     # initialize gyro
     doInit()
 
@@ -281,7 +278,7 @@ async def runTwo():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
 
     # turn to flick 3D cinema lever
-    await pivot_gyro_turn(0, -65, 10, True)
+    await pivot_gyro_turn_abs(0, -100, 10, True)
 
     # raise 3D cinema attachment
     motor.run_for_degrees(port.C, 2000, 1000)
@@ -292,7 +289,7 @@ async def runTwo():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
 
     # turn to align to sound mixer
-    await pivot_gyro_turn(100, 0, 43, True)
+    await pivot_gyro_turn_abs(100, 0, 43, True)
 
     # approach sound mixer
     motor.reset_relative_position(port.A, 0)
@@ -300,10 +297,10 @@ async def runTwo():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=275, target_angle=43, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(47.5))
 
     # turn right to release sound mixer lever
-    await pivot_gyro_turn(0, -50, 60, True)
+    await pivot_gyro_turn_abs(0, -50, 60, True)
 
     # turn to align to movie set
-    await pivot_gyro_turn(150, 0, 118, True)
+    await pivot_gyro_turn_abs(150, 0, 118, True)
 
     # go forward to movie set
     motor.reset_relative_position(port.A, 0)
@@ -330,13 +327,14 @@ async def runTwo():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=115, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5))
 
     # turn to align to base
-    doInit()
-    await pivot_gyro_turn(600, 0, 120, True)
+    # doInit()
+    await pivot_gyro_turn(600, 0, 175, True)
 
     # go forward to base
     motor.reset_relative_position(port.A, 0)
     motor.reset_relative_position(port.E, 0)
     motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(17), int(0), velocity=900)
+    print("runTwo -- End")
 
 # run three code
 async def runThree():
@@ -347,16 +345,16 @@ async def runThree():
     # go forward to align with rolling camera lever
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=1, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(39))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=1, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(39))
 
     # bring rolling camera attachment down to push down rolling camera lever
     await motor.run_for_degrees(port.B, 125, -1000)
 
     # turn to flick rolling camera lever
-    await pivot_gyro_turn(0, 100, -5, True)
+    await pivot_gyro_turn_abs(0, 100, -5, True)
 
     # lift rolling camera lever attachment to get out of the way of other missions
-    motor.run_for_degrees(port.B, 3300, 1000)
+    motor.run_for_degrees(port.B, 3000, 1050)
 
     # bring robot back to base to add audience members and experts
     motor.reset_relative_position(port.A, 0)
@@ -367,7 +365,7 @@ async def runThree():
     await runloop.sleep_ms(1000)
 
     # turn robot to launch next mission
-    await pivot_gyro_turn(0, 100, -30, True)
+    await pivot_gyro_turn_abs(0, 100, -30, True)
 
     # move forward to go to light show to drop of audience member and avoid hitting camera
     motor.reset_relative_position(port.A, 0)
@@ -386,35 +384,32 @@ async def runThree():
     motor.reset_relative_position(port.E, 0)
     await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(1), int(0), velocity=-100)
 
-    # # move robot back to drop of audience member near light show
-    # motor.reset_relative_position(port.A, 0)
-    # position = abs(motor.relative_position(port.A))
-    # await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-500, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(4))
-
     # turn robot to align with clapboard
-    await pivot_gyro_turn(100, 0, 50, True)
+    await pivot_gyro_turn_abs(100, 0, 50, True)
 
     # move robot forward to drop sam and audience member
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5.5))
 
     # move robot back to complete sam and audience member drop of
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(10))
 
+    # turn robot to align with clapboard
+    await pivot_gyro_turn_abs(-80, 80, 15, True)
+
     # move robot forward to pickup emily and go to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
-
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=900, target_angle=20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(70))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=900, target_angle=15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(70))
 
-    print("run3 -- END")
+    print("runThree -- END")
 
 # run Four code
 async def runFour():
@@ -469,9 +464,6 @@ async def runFour():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=34, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
 
-    # allow light lever to fall down, hence sleep
-    # runloop.sleep_ms(500)
-
     # turn left start alignment with augmented reality
     await pivot_gyro_turn_abs(-100, 100, -35, True)
 
@@ -511,7 +503,6 @@ async def runFour():
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-500, target_angle=-25, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(78)))
-
     print("runFour -- END")
 
 # run Five code
@@ -523,12 +514,12 @@ async def runFive():
     # move robot forward to go towards rolling camera
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
 
     # move robot backward to get in alignment for craft creator
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(24)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(24.8)))
 
     # Turn left to align with craft creator
     await pivot_gyro_turn_abs(100, -100, 45, True)
@@ -544,7 +535,7 @@ async def runFive():
     # move robot forward to latch onto craft creator lid
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(7)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(9)))
 
     # complete virtual reality
     await motor.run_for_degrees(port.C, 1500, 500, stop=motor.BRAKE)
@@ -555,20 +546,20 @@ async def runFive():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(48)))
     
     # sleep to take of the attatchment
-    await runloop.sleep_ms(2500)
+    await runloop.sleep_ms(3000)
 
     # start going back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(3)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(3)))
 
     # Turn to start going to base
-    await pivot_gyro_turn_abs(-150, 150, 16, True)
+    await pivot_gyro_turn_abs(-150, 150, 13, True)
 
     # start going back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=16, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(107)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=13, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(107)))
 
     # Turn to go in to base
     await pivot_gyro_turn_abs(-150, 150, -20, True)
@@ -576,11 +567,9 @@ async def runFive():
     # go to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(53)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(58)))
     print("runFive -- END")
 
-
-# run six code
 async def runSix():
     print("runSix -- START")
     # initialize motor pair
@@ -598,7 +587,7 @@ async def runSix():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=5, sleep_time=0, follow_for=follow_for_left_black)
 
     # turn around to get in position of the skateboard
-    await pivot_gyro_turn(200, 0, 43, True)
+    await pivot_gyro_turn_abs(200, 0, 43, True)
 
     # go forawrd to drop Izzy and audience member into skateboard
     motor.reset_relative_position(port.A, 0)
@@ -609,7 +598,7 @@ async def runSix():
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=43, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5.5))
-  
+    print("runSix -- END")
 
 # do port check code
 async def doPortCheck():
@@ -678,14 +667,12 @@ def is_right_button_pressed():
 
 # Main program which drives all the runs. LEFT button is used to trigger runs sequentially, starting with 0 and going till 6
 async def mainProgram():
-    start0 = time.ticks_ms()
     start1 = time.ticks_ms()
     start2 = time.ticks_ms()
     start3 = time.ticks_ms()
     start4 = time.ticks_ms()
     start5 = time.ticks_ms()
     start6 = time.ticks_ms()
-    end0 = time.ticks_ms()
     end1 = time.ticks_ms()
     end2 = time.ticks_ms()
     end3 = time.ticks_ms()
@@ -694,8 +681,8 @@ async def mainProgram():
     end6 = time.ticks_ms()
 
     print("mainProgram -- START")
-    program = 5
-    light_matrix.write("5")
+    program = 1
+    light_matrix.write("1")
     light.color(light.POWER, color.WHITE)
 
     # initialize motor pair
@@ -706,29 +693,15 @@ async def mainProgram():
 
         await runloop.until(is_left_button_pressed)
         print("starting runs....")
-        if (program == 0):
-            print("entering program 0")
-            light.color(light.POWER, color.MAGENTA)
-            light_matrix.show_image(light_matrix.IMAGE_BUTTERFLY)
-            start0 = time.ticks_ms()
-            runloop.run(runOne())
-            end0 = time.ticks_ms()
-            prg0 = time.ticks_diff(end0, start0)
-            light.color(light.POWER, color.YELLOW)
-            print("done program 0")
-            program = 1
-            light_matrix.write("1")
-        elif (program == 1):
+        if (program == 1):
             print("entering program 1")
             light.color(light.POWER, color.MAGENTA)
             light_matrix.show_image(light_matrix.IMAGE_BUTTERFLY)
             start1 = time.ticks_ms()
             runloop.run(runOne())
             end1 = time.ticks_ms()
-            prg1 = time.ticks_diff(end1, start1)
             light.color(light.POWER, color.YELLOW)
             print("done program 1")
-            print("Total run 1 =" + str(time.ticks_diff(end1, start1)/1000))
             program = 2
             light_matrix.write("2")
         elif (program == 2):
@@ -738,10 +711,8 @@ async def mainProgram():
             start2 = time.ticks_ms()
             runloop.run(runTwo())
             end2 = time.ticks_ms()
-            prg2 = time.ticks_diff(end2, start2)
             light.color(light.POWER, color.YELLOW)
             print("done program 2")
-            print("Total run 2 =" + str(time.ticks_diff(end2, start2)/1000))
             program = 3
             light_matrix.write("3")
         elif (program == 3):
@@ -749,12 +720,10 @@ async def mainProgram():
             light.color(light.POWER, color.MAGENTA)
             light_matrix.show_image(light_matrix.IMAGE_BUTTERFLY)
             start3 = time.ticks_ms()
-            prg3 = time.ticks_diff(end3, start3)
             runloop.run(runThree())
             end3 = time.ticks_ms()
             light.color(light.POWER, color.YELLOW)
             print("done program 3")
-            print("Total run 3 =" + str(time.ticks_diff(end3, start3)/1000))
             program = 4
             light_matrix.write("4")
         elif (program == 4):
@@ -764,10 +733,8 @@ async def mainProgram():
             start4 = time.ticks_ms()
             runloop.run(runFour())
             end4 = time.ticks_ms()
-            prg4 = time.ticks_diff(end4, start4)
             light.color(light.POWER, color.YELLOW)
             print("done program 4")
-            print("Total run 4 =" + str(time.ticks_diff(end4, start4)/1000))
             program = 5
             light_matrix.write("5")
         elif (program == 5):
@@ -777,10 +744,8 @@ async def mainProgram():
             start5 = time.ticks_ms()
             runloop.run(runFive())
             end5 = time.ticks_ms()
-            prg5 = time.ticks_diff(end5, start5)
             light.color(light.POWER, color.YELLOW)
             print("done program 5")
-            print("Total run 5 =" + str(time.ticks_diff(end5, start5)/1000))
             program = 6
             light_matrix.write("6")
         elif (program == 6):
@@ -790,22 +755,18 @@ async def mainProgram():
             start6 = time.ticks_ms()
             runloop.run(runSix())
             end6 = time.ticks_ms()
-            prg6 = time.ticks_diff(end6, start6)
             light.color(light.POWER, color.YELLOW)
             print("done program 6")
-            program = -1
-            light_matrix.write("-1")
+            program = 0
+            light_matrix.write("0")
 
-            print("Total run 1 pt 1 =" + str(time.ticks_diff(end0, start0)/1000))
-            print("Total run 1 pt 2 =" + str(time.ticks_diff(end1, start1)/1000))
+            print("Total run 1 =" + str(time.ticks_diff(end1, start1)/1000))
             print("Total run 2 =" + str(time.ticks_diff(end2, start2)/1000))
             print("Total run 3 =" + str(time.ticks_diff(end3, start3)/1000))
             print("Total run 4 =" + str(time.ticks_diff(end4, start4)/1000))
             print("Total run 5 =" + str(time.ticks_diff(end5, start5)/1000))
             print("Total run 6 =" + str(time.ticks_diff(end6, start6)/1000))
-
-            print("Transition 1pt1 to 1pt2 =" + str(time.ticks_diff(start1, end0)/1000))
-            print("Transition 1pt2 to 2 =" + str(time.ticks_diff(start2, end1)/1000))
+            print("Transition 1 to 2 =" + str(time.ticks_diff(start2, end1)/1000))
             print("Transition 2 to 3 =" + str(time.ticks_diff(start3, end2)/1000))
             print("Transition 3 to 4 =" + str(time.ticks_diff(start4, end3)/1000))
             print("Transition 4 to 5 =" + str(time.ticks_diff(start5, end4)/1000))
