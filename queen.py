@@ -370,24 +370,24 @@ async def runThree():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=800, target_angle=-35, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(40))
 
     # turn robot to launch next mission
-    await pivot_gyro_turn(0, 100, -17, True)
+    await pivot_gyro_turn(0, 100, -16, True)
 
     # move forward beyond the camera and head towards the light show
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-17, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(32.5))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=450, target_angle=-16, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(32.8))
 
     motor.reset_relative_position(port.A, 0)
     motor.reset_relative_position(port.E, 0)
     await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(1), int(0), velocity=-100)
 
     # turn robot to align with clapboard
-    await pivot_gyro_turn_abs(150, 0, 50, True)
+    await pivot_gyro_turn_abs(150, 0, 55, True)
 
     # move robot forward to drop sam and audience member
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=55, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6.5))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=55, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6.2))
 
     # move robot back to complete sam and audience member drop of
     motor.reset_relative_position(port.A, 0)
@@ -467,7 +467,7 @@ async def runFour():
     # move robot forward to align with augmented reality
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=-35, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(14))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=-35, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(13))
 
     # turn left to complete alignment with augmented reality
     await pivot_gyro_turn_abs(-100, 100, -85, True)
@@ -475,7 +475,7 @@ async def runFour():
     # move robot forward to align with augmented reality
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15.5))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16))
 
     # move horizontal rack to engage with augmented reality lever
     await motor.run_for_degrees(port.B, 850, 1050) # move rack right
@@ -483,7 +483,7 @@ async def runFour():
     # move robot backward to engage with augmented reality lever
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5.2))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5.5))
 
     # move horizontal rack to left to pull augmented reality lever back
     await motor.run_for_degrees(port.B, 675, -1050) # move rack left
@@ -683,8 +683,8 @@ async def mainProgram():
     end6 = time.ticks_ms()
 
     print("mainProgram -- START")
-    program = 1
-    light_matrix.write("1")
+    program = 3
+    light_matrix.write("3")
     light.color(light.POWER, color.WHITE)
 
     # initialize motor pair
