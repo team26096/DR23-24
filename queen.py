@@ -206,7 +206,7 @@ async def runOne():
     # go backwards pt.2
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(32.3))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(33.5))
 
     # bring the rack down to push the immersive experience
     await motor.run_for_degrees(port.C, 1550, 1050)
@@ -237,7 +237,7 @@ async def runOne():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
 
     # bring rack up to complete light show
-    await motor.run_for_degrees(port.C, 1555, -1000)
+    await motor.run_for_degrees(port.C, 1565, -1000)
 
     # go back to get the pieces fully in mastepiece
     motor.reset_relative_position(port.A, 0)
@@ -245,12 +245,12 @@ async def runOne():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16))
 
     # turn to get to base
-    await pivot_gyro_turn_abs(100, -100, 35, True)
+    await pivot_gyro_turn_abs(100, -100, 34, True)
 
     # go forward to get Noah and go back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=700, target_angle=35, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(65))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=700, target_angle=34, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(65))
 
     # come back to base
     motor.reset_relative_position(port.A, 0)
@@ -374,17 +374,17 @@ async def runThree():
     await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(1.5), int(0), velocity=-100)
 
     # turn robot to align with clapboard
-    await pivot_gyro_turn_abs(100, -100, 51, True)
+    await pivot_gyro_turn_abs(100, -100, 46, True)
 
     # move robot forward to drop sam and audience member
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=450, target_angle=51, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(4.5))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=450, target_angle=46, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(4))
 
     # move robot back to complete sam and audience member drop of
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=51, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6.5))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-300, target_angle=46, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6))
 
     # turn robot to align with right base
     await pivot_gyro_turn_abs(-80, 80, 15, True)
@@ -508,7 +508,7 @@ async def runFive():
     # move robot backward to get in alignment for craft creator
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(23.8)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(22.8)))
 
     # Turn left to align with craft creator
     await pivot_gyro_turn_abs(100, -100, 45, True)
@@ -539,7 +539,7 @@ async def runFive():
     # move robot backward to lift craft creator lid
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-600, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(17)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-600, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(16)))
 
     # sleep to take of the attatchment
     await runloop.sleep_ms(3500)
@@ -547,24 +547,24 @@ async def runFive():
     # start going back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(2.5)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(1.5)))
 
     # Turn to start going to base
-    await pivot_gyro_turn_abs(-150, 150, 13, True)
+    await pivot_gyro_turn_abs(-150, 150, 14, True)
 
     # start going back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=13, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(106)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=14, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(107)))
 
     # Turn to go in to base
-    await pivot_gyro_turn_abs(-150, 150, -11, True)
+    await pivot_gyro_turn_abs(-150, 150, -12, True)
 
     # go to base
     #motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(66), 0, velocity=800)
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=-11, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(64)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=-12, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(64)))
     print("runFive -- END")
 
 async def runSix():
@@ -594,7 +594,7 @@ async def runSix():
     # come back to position robot so audience members and experts are in popcorn and drama icon
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-700, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(6))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-700, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5))
     print("runSix -- END")
 
 # do port check code
