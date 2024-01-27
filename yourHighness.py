@@ -267,62 +267,61 @@ async def runTwo():
     # get out of base to approach 3D cinema
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(24))
 
     # turn to flick 3D cinema lever
-    await pivot_gyro_turn_abs(0, -100, 10, True)
+    await pivot_gyro_turn_abs(0, -200, 10, True)
+
+    # turn back to 0
+    await pivot_gyro_turn_abs(-200, 0, 0, True)
 
     # raise 3D cinema attachment
-    motor.run_for_degrees(port.C, 2000, 1000)
+    motor.run_for_degrees(port.C, 1500, 1000)
 
     # come back to base and align with sound mixer
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
+
+    # sleep for 1.5 seconds to quickly align robot for reliability
+    await runloop.sleep_ms(2000) 
 
     # turn to align to sound mixer
-    await pivot_gyro_turn_abs(100, 0, 43, True)
+    await pivot_gyro_turn_abs(100, 0, 41, True)
 
     # approach sound mixer
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=43, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(47.3))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(44))
+    
+    # bring Noah L hook down to pick him up
+    await motor.run_for_degrees(port.B, -1000, 800)
 
-    # turn right to release sound mixer lever
-    await pivot_gyro_turn_abs(0, -50, 60, True)
-
-    # turn to align to movie set
-    await pivot_gyro_turn_abs(150, 0, 115, True)
-
-    # go forward to movie set
+    # come back to release sliders on left and right
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=115, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(14.2))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(8))
 
-    # bring movie set attachment down
-    await motor.run_for_degrees(port.B, -940, 1000)
+    # turn to align to last two sliders to raise middle one
+    await pivot_gyro_turn_abs(50, 0, 47, True)
 
-    # go backward to pull movie set
+    await sound.beep()
+    print("yaw value before:" + str(get_yaw_value()))
+
+    # go forward and lift last two sliders
+    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(8), 0, velocity=150)
+
+    await sound.beep()
+    print("yaw value after:" + str(get_yaw_value()))
+
+    # motor.reset_relative_position(port.A, 0)
+    # position = abs(motor.relative_position(port.A))
+    # await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=150, target_angle=50, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(8))
+
+    # come back to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=115, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(19.2))
-
-    # bring movie set attahcment up
-    await motor.run_for_degrees(port.B, 940, 1100)
-
-    # come back to get out of the way of movie set
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=116, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(7))
-
-    # turn to align to base
-    doInit()
-    await pivot_gyro_turn_abs(600, 0, 120, True)
-
-    # go backward to base
-    motor.reset_relative_position(port.A, 0)
-    motor.reset_relative_position(port.E, 0)
-    motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(30), int(0), velocity=800)
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-600, target_angle=46, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(50))
     print("runTwo -- End")
 
 # run three code
