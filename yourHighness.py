@@ -551,29 +551,15 @@ async def runSix():
     # initialize motor pair
     doInit()
 
-    # turn in base to align with target areas
-    await pivot_gyro_turn_abs(100, -100, 5, True)
-
-    # go forward to get out of base and approach target area
+    # move robot forward to go towards rolling camera
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(45))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=800, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(31.4)))
 
-    # go back till left sensor is on black for a checkpoint towards theatre scene change
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=5, sleep_time=0, follow_for=follow_for_left_black)
-
-    # turn around to get in position of the skateboard
-    await pivot_gyro_turn_abs(200, 0, 43, True)
-
-    # go forawrd to drop Izzy and audience member into skateboard
-    motor.reset_relative_position(port.A, 0)
+    # move robot backward to get back to base
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=700, target_angle=43, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(29.8)))
 
-    # come back to position robot so audience members and experts are in popcorn and drama icon
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-700, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5))
     print("runSix -- END")
 
 # do port check code
