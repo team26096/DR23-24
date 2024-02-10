@@ -345,7 +345,7 @@ async def runThree():
     await pivot_gyro_turn_abs(0, 100, -5, True)
 
     # lift rolling camera lever attachment to get out of the way of other missions
-    motor.run_for_degrees(port.B, 2900, 1050)
+    motor.run_for_degrees(port.B, 2200, 1050)
 
     # bring robot back to turn to align to camera target area
     motor.reset_relative_position(port.A, 0)
@@ -360,21 +360,21 @@ async def runThree():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=-15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5))
 
-    # lift rolling camera lever attachment to get out of the way of other missions
-    motor.run_for_degrees(port.C, 2500, 1050)
+    # lift moive set lever attachment to get out of the way of other missions
+    motor.run_for_degrees(port.C, 3500, 1050)
 
-    # come back to put light show audience member with robot
+    # come back to put buddha and take off rolling camera attachment
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
-    # sleep to put audiece members and Sam
-    await runloop.sleep_ms(500)
+    # sleep to put buddha and take off rolling camera attachment
+    await runloop.sleep_ms(3500)
 
     # turn robot to launch next mission
     await pivot_gyro_turn_abs(0, 100, -35, True)
 
-    # move forward to go to light show to drop of audience member and avoid hitting camera
+    # move forward to go to light show to drop of audience member and do light show
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-35, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(40))
@@ -385,13 +385,20 @@ async def runThree():
     # move forward beyond the camera and head towards the light show
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-16, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(31.8))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-16, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(35))
+
+    # do light show
+    await motor.run_for_degrees(port.B, 2050, -1000)
+
+    sound.beep()
 
     motor.reset_relative_position(port.A, 0)
     motor.reset_relative_position(port.E, 0)
-    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(1.5), int(0), velocity=-100)
+    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(4), int(0), velocity=-100)
 
-    # turn robot to align with clapboard
+    sound.beep()
+
+    # turn robot to align with right base
     await pivot_gyro_turn_abs(100, -100, 15, True)
 
     # move robot forward to pickup emily and go to base
@@ -403,7 +410,7 @@ async def runThree():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=900, target_angle=15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(85))
 
-    print("runThree -- END
+    print("runThree -- END")
     
 # run Four code
 async def runFour():
