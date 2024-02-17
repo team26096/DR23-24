@@ -360,8 +360,8 @@ async def runThree():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=-15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5))
 
-    # lift moive set lever attachment to get out of the way of other missions
-    motor.run_for_degrees(port.C, 3500, 1050)
+    # lift movie set lever attachment to get out of the way of other missions
+    motor.run_for_degrees(port.C, 2500, 1050)
 
     # come back to put buddha and take off rolling camera attachment
     motor.reset_relative_position(port.A, 0)
@@ -369,7 +369,7 @@ async def runThree():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     # sleep to put buddha and take off rolling camera attachment
-    await runloop.sleep_ms(3500)
+    await runloop.sleep_ms(5000)
 
     # turn robot to launch next mission
     await pivot_gyro_turn_abs(0, 100, -35, True)
@@ -388,7 +388,7 @@ async def runThree():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-16, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(35))
 
     # do light show
-    await motor.run_for_degrees(port.B, 2050, -1000)
+    await motor.run_for_degrees(port.B, 1725, -1000)
 
     sound.beep()
 
@@ -404,11 +404,11 @@ async def runThree():
     # move robot forward to pickup emily and go to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=500, target_angle=17, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=900, target_angle=15, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(85))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=900, target_angle=17, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(85))
 
     print("runThree -- END")
     
