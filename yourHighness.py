@@ -371,92 +371,15 @@ async def runFour():
     # initialize motor pair
     doInit()
 
-    # move horizontal rack to left to avoid collision with lights and sound
-    motor.run_for_degrees(port.B, 900, -500) # move rack left
-
-    # move robot to approach audience drop off with checkpoints along the way
+    # move robot forward to go towards rolling camera
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-3, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-3, sleep_time=0, follow_for=follow_for_right_white)
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=300, target_angle=-3, sleep_time=0, follow_for=follow_for_right_black)
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=800, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(31.4)))
 
-    # move forward to complete audience drop off
-    motor.reset_relative_position(port.A, 0)
+    # move robot backward to get back to base
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-3, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15.5)))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(29.8)))
 
-    # move robot backward to align with hologram performer
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-3, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(16.5)))
-
-    # align with hologram performer
-    await pivot_gyro_turn_abs(80, 0, 42, True)
-
-    # move forwward to push hologram performer lever and complete the mission
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=80, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(15)))
-
-    # Rotate left motor anti clockwise to flick the lever of sound speaker
-    await motor.run_for_degrees(port.C, -125, 300)
-
-    # move robot backward to align with lights
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-150, target_angle=42, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(0.8))
-
-    # bring lever back to avoid hitting Noah and audience member
-    motor.run_for_degrees(port.C, 100, 200)
-
-    # turn left to complete alignment with lights lever
-    await pivot_gyro_turn_abs(-100, 0, 34, True)
-
-    # move robot backward to pull light lever
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=34, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
-
-    # turn left start alignment with augmented reality
-    await pivot_gyro_turn_abs(-100, 100, -35, True)
-
-    # move robot forward to align with augmented reality
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=-35, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(13))
-
-    # turn left to complete alignment with augmented reality
-    await pivot_gyro_turn_abs(-100, 100, -85, True)
-
-    # move robot forward to align with augmented reality
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=400, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(16))
-
-    # move horizontal rack to engage with augmented reality lever
-    await motor.run_for_degrees(port.B, 850, 1050) # move rack right
-
-    # move robot backward to engage with augmented reality lever
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(5.5))
-
-    # move horizontal rack to left to pull augmented reality lever back
-    await motor.run_for_degrees(port.B, 675, -1050) # move rack left
-
-    # move robot backward to pull augmented reality lever
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=-85, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
-
-    # turn right to go back to base
-    await pivot_gyro_turn_abs(100, -100, -25, True)
-
-    # go back to base
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-800, target_angle=-25, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(78)))
     print("runFour -- END")
 
 # run Five code
