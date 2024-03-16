@@ -164,10 +164,7 @@ async def runOne():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=-60, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(60))
 
-    # turn to make sure Anna and masterpiece are completely in museum
-    # await pivot_gyro_turn_abs(-100, 0, -70, True)
-
-    # go forward to drop masterpice and Anna into museum P2
+    # going backward (forward) to align with immersive experience
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=-60, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
@@ -175,7 +172,7 @@ async def runOne():
     # go back (forward) to align with immersive experience
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(50))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(46))
 
     # turn to align with immersive experience
     await pivot_gyro_turn_abs(-100, 0, -87, True)
@@ -183,14 +180,14 @@ async def runOne():
     # go forward to do immersive experience
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-87, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(39))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=-87, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(45))
 
     # come back to turn for theatre scene change
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(12))
 
-    # turn to align to theatre scene change
+    # turn to align to theater scene change
     await pivot_gyro_turn_abs(0, -100, 0, True)
 
     await sound.beep()
@@ -200,15 +197,37 @@ async def runOne():
 
     await sound.beep()
 
-    # go forward to theatre scene change and push once
-    motor.reset_relative_position(port.A, 0)
-    position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(2))
+    # bring rack down to push theater scene change
+    await motor.run_for_degrees(port.B, 2000, 1000)
 
-    # come back to turn to base
+    # go back to get to base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(7))
+    await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(15))
+
+    # turn around to align to go back to base
+    await pivot_gyro_turn_abs(0, 100, -45, True)
+
+    # go forward to not crash into anything
+    motor.reset_relative_position(port.A, 0)
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-45, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(10))
+
+    # turn to not crash into 3D cinema
+    await pivot_gyro_turn_abs(0, 100, -70, True)
+
+    # go back to get into base
+    motor.reset_relative_position(port.A, 0)
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=450, target_angle=-70, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(35))
+
+    # turn again
+    await pivot_gyro_turn_abs(100, 0, -30, True)
+
+    # get completely into base
+    motor.reset_relative_position(port.A, 0)
+    position = abs(motor.relative_position(port.A))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=450, target_angle=-30, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(20))
 
     print("runOne -- End")
 
