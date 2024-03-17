@@ -384,7 +384,7 @@ async def runThree():
 
     print("runThree -- END")
     
-# run Four code
+# run Five code
 async def runFour():
     print("runFour -- START")
     # initialize motor pair
@@ -399,9 +399,9 @@ async def runFour():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(29.8)))
 
-    print("runFour -- END")
+    print("runFive -- END")
 
-# run Five code
+# run Four code
 async def runFive():
     print("runFive -- START")
     # initialize motor pair
@@ -452,7 +452,7 @@ async def runFive():
     # Turn left to align with craft creator
     # await pivot_gyro_turn_abs(-100, 0, -35, True)
 
-    print("runFive -- END")
+    print("runFour -- END")
 
 async def runSix():
     print("runSix -- START")
