@@ -219,7 +219,7 @@ async def runOne():
     await pivot_gyro_turn_abs(-100, 100, -45, True)
 
     # go forward to align with base
-    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(10), 0, velocity=500)    
+    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(10), 0, velocity=600)
 
     # turn to not crash into 3D cinema pt2
     await pivot_gyro_turn_abs(-100, 100, -70, True)
@@ -227,7 +227,7 @@ async def runOne():
     # go back to get into base pt2
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-70, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(40))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=-70, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(40))
 
     # turn again
     await pivot_gyro_turn_abs(100, -100, -20, True)
@@ -235,7 +235,7 @@ async def runOne():
     # get completely into base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=450, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(22))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=600, target_angle=-20, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(22))
 
     print("runOne -- End")
 
@@ -264,7 +264,7 @@ async def runTwo():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-400, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
 
     # sleep for 1.5 seconds to quickly align robot for reliability
-    await runloop.sleep_ms(2000) 
+    await runloop.sleep_ms(2000)
 
     # turn to align to sound mixer
     await pivot_gyro_turn_abs(100, 0, 41, True)
@@ -273,7 +273,7 @@ async def runTwo():
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=250, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(44))
-    
+
     # bring Noah L hook down to pick him up
     await motor.run_for_degrees(port.B, -1000, 800)
 
@@ -391,9 +391,9 @@ async def runThree():
     await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=900, target_angle=17, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(85))
 
     print("runThree -- END")
-    
+
 # run Five code
-async def runFour():
+async def runFive():
     print("runFour -- START")
     # initialize motor pair
     doInit()
@@ -410,23 +410,10 @@ async def runFour():
     print("runFive -- END")
 
 # run Four code
-async def runFive():
+async def runFour():
     print("runFive -- START")
     # initialize motor pair
     doInit()
-
-    # # move robot forward to go towards rolling camera
-    # motor.reset_relative_position(port.A, 0)
-    # position = abs(motor.relative_position(port.A))
-    # await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=325, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(34)))
-
-    # # move robot backward to get in alignment for craft creator
-    # motor.reset_relative_position(port.A, 0)
-    # position = abs(motor.relative_position(port.A))
-    # await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(22.8)))
-
-    # # Turn left to align with craft creator
-    # await pivot_gyro_turn_abs(100, -100, 45, True)
 
     # move robot forward to start going to craft creator
     motor.reset_relative_position(port.A, 0)
@@ -674,8 +661,8 @@ async def mainProgram():
         hub.light_matrix.write(str(i))
 
     # set initial program
-    program = 5
-    light_matrix.write("5")
+    program = 1
+    light_matrix.write("1")
     light.color(light.POWER, color.WHITE)
 
     while (True):
@@ -762,6 +749,6 @@ async def mainProgram():
             print("Transition 3 to 4 =" + str(time.ticks_diff(start4, end3)/1000))
             print("Transition 4 to 5 =" + str(time.ticks_diff(start5, end4)/1000))
             print("Transition 5 to 6 =" + str(time.ticks_diff(start6, end5)/1000))
-            sys.exit("sucessfully exited")
+            sys.exit(1)
 
 runloop.run(mainProgram())
