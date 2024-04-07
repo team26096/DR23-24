@@ -164,15 +164,10 @@ async def runOne():
     position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=-60, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(85))
 
-    # # going backward (forward) to align with immersive experience
-    # motor.reset_relative_position(port.A, 0)
-    # position = abs(motor.relative_position(port.A))
-    # await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-350, target_angle=-60, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(25))
-
     # go forward to align with immersive experience
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(41))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-65, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(43))
 
     # turn to align with immersive experience
     await pivot_gyro_turn_abs(-100, 0, -87, True)
