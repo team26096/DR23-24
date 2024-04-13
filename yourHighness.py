@@ -247,7 +247,7 @@ async def runTwo():
     # get out of base to approach 3D cinema
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(24))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=350, target_angle=-5, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(23))
 
     # turn to flick 3D cinema lever
     await pivot_gyro_turn_abs(300, -300, 15, True)
@@ -283,7 +283,7 @@ async def runTwo():
     await follow_gyro_angle(kp=1.4, ki=0, kd=0, speed=-250, target_angle=41, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(8))
 
     # turn to align to last two sliders to raise middle one
-    await pivot_gyro_turn_abs(50, 0, 44, True)
+    await pivot_gyro_turn_abs(25, 0, 43, True)
 
     # go forward and lift last two sliders
     await motor_pair.move_for_degrees(motor_pair.PAIR_1, degreesForDistance(8), 0, velocity=150)
@@ -455,7 +455,7 @@ async def runSix():
     # move forward to get out of base
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(23)))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=0, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=(degreesForDistance(25)))
 
     # Turn to align for audience drop of
     await pivot_gyro_turn_abs(100, -100, 44, True)
@@ -513,7 +513,7 @@ async def runSix():
     # move robot forward to align with augmented reality
     motor.reset_relative_position(port.A, 0)
     position = abs(motor.relative_position(port.A))
-    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(9))
+    await follow_gyro_angle(kp=-1.4, ki=0, kd=0, speed=200, target_angle=-90, sleep_time=0, follow_for=follow_for_distance, initial_position=position, distance_to_cover=degreesForDistance(13.5))
 
     # turn left to complete alignment with augmented reality
     await pivot_gyro_turn_abs(-100, 100, -132, True)
