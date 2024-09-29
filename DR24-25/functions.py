@@ -62,7 +62,7 @@ async def test_follow_gyro_angle_for_distance(distance):
     motor.reset_relative_position(port.A, 0)
     initial_position = abs(motor.relative_position(port.A))
     print("degreesForDistance = {}"+ str(degreesForDistance(distance)))
-    await follow_gyro_angle(kp=0, ki=0, kd=0, speed=250, target_angle=0, sleep_time=0, follow_for=follow_for_distance,
+    await follow_gyro_angle(kp=-2, ki=0, kd=0, speed=250, target_angle=0, sleep_time=0, follow_for=follow_for_distance,
                     initial_position=initial_position, distance_to_cover=(degreesForDistance(distance)))
 
 async def mainProgram():
@@ -84,7 +84,8 @@ async def mainProgram():
     #     hub.light_matrix.write(str(i))
 
 
-    await test_follow_gyro_angle_for_distance(60)
+    await test_follow_gyro_angle_for_distance(120)
 
 runloop.run(mainProgram())
+
 
