@@ -3,110 +3,88 @@
 # This file contains all utility functions
 # TODO: Populate from the other(?)
 
+import color, color_sensor, device, motor, motor_pair, orientation, runloop
+import hub
 
-from initialize import *
+from hub import light_matrix, button, motion_sensor, light, sound, port
 
-class FollowGyroAngleErrorTooFast(Exception):
-    """
-    Raised when a gyro following robot has been asked to follow
-    an angle at an unrealistic speed
-    """
-    pass
+WHEEL_CIRCUMFERENCE = 17.584
 
-def readAllValues():
-    # Read all Files
-    pass
-
-#this function moves a motor until it cannot move anymore(stall)
-def run_for_motor_stalled(motor, seconds, speed):
-    pass
-
-# class EV3DRTires(Wheel):
-#     """
-#     part number 41897
-#     comes in set 45544
-#     """
-#     def __init__(self):
-#         Wheel.__init__(self, 50, 15)
-
-def robot_runfordegrees(robot, left_speed, right_speed, degrees):
-    pass
-
-#this function turns the motor for a certain amount of degrees, 
-#normally we can do this with the one line that is in the function 
-#but to put it as a thread(that we will use towards the end of the run) 
-#we needed to make a new function
-def motor_pair_runfordegrees(speed, degrees):
-    await motor_pair.move_for_degrees(motor_pair.PAIR_1, degrees=degrees, steering=0, velocity=speed, stop=motor.BRAKE)
+def follow_for_distance(initial_position=0,
+                        distance_to_cover=0):
+    current_position = abs(motor.relative_position(port.A))
+    distance_covered = current_position - initial_position
+    if distance_covered < 0 : distance_covered = distance_covered * -1
+    if (distance_covered >= distance_to_cover):
+        return False
+    else:
+        return True
 
 
-def my_follow_for_degrees(tank, degrees, left_motor, right_motor):    
-    pass
+def get_yaw_value():
+    return motion_sensor.tilt_angles()[0] * -0.1
 
-def follow_until_white(tank, lightSensor):
-    pass
+def degreesForDistance(distance_cm):
+    # Add multiplier for gear ratio if needed
+    return int((distance_cm/WHEEL_CIRCUMFERENCE) * 360)
 
-def follow_until_black(tank,lightSensor):
-    pass
 
-def follow_until_right_white(tank, lightSensor):
-    pass
+async def follow_gyro_angle(kp,
+                            ki,
+                            kd,
+                            speed,
+                            target_angle,
+                            sleep_time,
+                            follow_for, **kwargs):
+    # get initial reading from left motor
+    integral = 0.0
+    last_error = 0.0
+    derivative = 0.0
+    while (follow_for(**kwargs)):
+        current_angle = get_yaw_value()
+        error = current_angle - target_angle
+        integral = integral + error
+        derivative = error - last_error
+        last_error = error
+        # compute steering correction
+        steering_value = (error * kp) + (integral * ki) + (derivative * kd)
 
-def follow_until_left_white(tank, lightSensor):
-    pass
+        if sleep_time:
+            runloop.sleep_ms(sleep_time)
+        # kp value should be +ve for forward movement (postive speed value), and -ve for backward movement (negative speed value)
+        motor_pair.move(motor_pair.PAIR_1, int(steering_value), velocity=speed)
 
-def follow_until_back_white(tank, lightSensor, range=5):
-    pass
+    # stop when follow_for condition is met
+    motor_pair.stop(motor_pair.PAIR_1, stop=motor.HOLD)
 
-def follow_until_front_white(tank, lls, rls):
-    pass
 
-def follow_until_right_black(tank,lightSensor, range=3):
-    pass
+async def test_follow_gyro_angle_for_distance(distance):
+    motor.reset_relative_position(port.A, 0)
+    initial_position = abs(motor.relative_position(port.A))
+    print("degreesForDistance = {}"+ str(degreesForDistance(distance)))
+    await follow_gyro_angle(kp=0, ki=0, kd=0, speed=250, target_angle=0, sleep_time=0, follow_for=follow_for_distance,
+                    initial_position=initial_position, distance_to_cover=(degreesForDistance(distance)))
 
-def follow_until_left_black(tank,lightSensor):
-    pass
-    
-def follow_until_back_black(tank,lightSensor):
-    pass
+async def mainProgram():
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.E)
+    print("mainProgram -- START")
 
-def follow_until_front_black(tank, lls, rls, range=3):
-    pass
+    light_matrix.write("0")
+    light.color(light.POWER, color.RED)
 
-def pivot_gyro_turn(left_speed, right_speed, target_angle, 
-robot, gyro, bLeftTurn = True):
-    pass
+    # reset yaw to 0
+    motion_sensor.set_yaw_face(motion_sensor.TOP)
+    motion_sensor.reset_yaw(0)
+    await runloop.sleep_ms(1000)
 
-def do_calibrate():
-    pass
+    # i = 0
+    # while (hub.motion_sensor.stable() == False):
+    #     i = i+1
+    #     await runloop.sleep_ms(100)
+    #     hub.light_matrix.write(str(i))
 
-def do_calibrate_back():
-    pass
 
-def squareToWhite(speed, left_light, right_light, left_motor, right_motor):
-    pass
+    await test_follow_gyro_angle_for_distance(60)
 
-def squareToBlack(speed, left_light, right_light, left_motor, right_motor):
-    pass
+runloop.run(mainProgram())
 
-def BackwardStall(robot, speed, timeout):
-    pass
-
-def p_pivot_gyro_turn(left_speed, right_speed, target_angle,  
-robot, gyro, bLeftTurn = True, error_margian = 2, p = 2):
-    pass
-
-def myPerfectSquare(left_target_light, right_target_light, left_motor, right_motor, maxSeconds):
-  pass
-
-#function to turn and align back sensor to black with forward motion
-def backward_turn_until_config_left_white(light_sensor, robot, bLeftTurn=True):
-   pass
-
-#function to turn and align back sensor to black with forward motion
-def backward_turn_until_config_left_black(light_sensor, robot, bLeftTurn=True):
-    pass
-
-def pivot_turn_until_black(left_speed, right_speed, target_light, 
-robot, lightSensor):
-    pass
