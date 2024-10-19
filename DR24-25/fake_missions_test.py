@@ -34,6 +34,16 @@ def follow_for_color_white():
 def follow_for_color_black():
     return get_color_value() >= BLACK_COLOR_INTENSITY_MAX
 
+# Keep moving until the color sensor detects white
+def follow_on_color_white():
+    return get_color_value() >= WHITE_COLOR_INTENSITY_MIN
+
+# Keep moving until the color sensor detects black
+def follow_on_color_black():
+    print("follow_on_color_black - color value = {}".format(get_color_value()))
+    return get_color_value() <= BLACK_COLOR_INTENSITY_MAX
+
+
 async def follow_for_black_followed_by_white(last_color, time_on_black=0.25, time_on_white=0.10):
     if last_color == "black":
         runloop.sleep_ms(time_on_black * 1000)
@@ -134,6 +144,18 @@ async def test_go_to_white(reverse=False):
     await follow_gyro_angle(kp=-1.45*(1 if reverse else -1), ki=0, kd=0,
                             speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_white)
 
+async def test_go_to_black_followed_by_white(reverse=False):
+    while(True):
+        await follow_gyro_angle(kp=-1.7*(1 if reverse else -1), ki=0, kd=0,
+                                    speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_black)
+        runloop.sleep_ms(100)
+        await follow_gyro_angle(kp=-1.7*(1 if reverse else -1), ki=0, kd=0,
+                                    speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_on_color_black)
+        if get_color_value() >= WHITE_COLOR_INTENSITY_MIN:
+            break
+
+
+
 async def test_fake_missions():
     # Go forward 20 cm
     motor.reset_relative_position(port.A, 0)
@@ -145,7 +167,7 @@ async def test_fake_missions():
     # turn left 45 degrees
     await turn_left(speed=100, angle=45, stop=True)
 
-    # go forward 12 cm 
+    # go forward 12 cm
     distance = 12
     motor.reset_relative_position(port.A, 0)
     initial_position = abs(motor.relative_position(port.A))
@@ -158,7 +180,7 @@ async def test_fake_missions():
     initial_position = abs(motor.relative_position(port.A))
     await follow_gyro_angle(kp=-1.45*(int(distance/abs(distance))), ki=0, kd=0, speed=250*(int(distance/abs(distance))), target_angle=-45, sleep_time=0, follow_for=follow_for_distance,
                     initial_position=initial_position, distance_to_cover=(degreesForDistance(distance)))
-    
+
 
     # Turn right to 45
     await turn_right(speed=150, angle=45, stop=True)
@@ -169,7 +191,7 @@ async def test_fake_missions():
     distance = 25
     await follow_gyro_angle(kp=-1.45*(int(distance/abs(distance))), ki=0, kd=0, speed=250*(int(distance/abs(distance))), target_angle=45, sleep_time=0, follow_for=follow_for_distance,
                     initial_position=initial_position, distance_to_cover=(degreesForDistance(distance)))
-    
+
     # Go back 25 cm
     motor.reset_relative_position(port.A, 0)
     initial_position = abs(motor.relative_position(port.A))
@@ -216,12 +238,11 @@ async def mainProgram():
     # await runloop.sleep_ms(1500)
     # await test_turn_right(90)
 
-    await test_fake_missions()
-    
+    # await test_fake_missions()
+
     # await test_go_to_black()
 
     # await test_go_to_white()
 
+    await test_go_to_black_followed_by_white()
 
-
-runloop.run(mainProgram())
