@@ -11,8 +11,11 @@ from hub import light_matrix, button, motion_sensor, light, sound, port
 
 WHEEL_CIRCUMFERENCE = 17.584
 
-WHITE_COLOR_INTENSITY_MIN = 92
+WHITE_COLOR_INTENSITY_MIN = 97
 BLACK_COLOR_INTENSITY_MAX = 18
+
+COLOR_SENSOR_CENTER_PORT = port.C
+COLOR_SENSOR_LEFT_PORT = port.D
 
 
 def follow_for_distance(initial_position=0,
@@ -25,43 +28,20 @@ def follow_for_distance(initial_position=0,
     else:
         return True
 
-def get_color_value():
-    return color_sensor.reflection(port.C)
+def get_color_values():
+    return color_sensor.reflection(COLOR_SENSOR_CENTER_PORT), color_sensor.reflection(COLOR_SENSOR_LEFT_PORT)
 
-def follow_for_color_white():
-    return get_color_value() <= WHITE_COLOR_INTENSITY_MIN
+def follow_for_color_white_center():
+    return get_color_values()[0] <= WHITE_COLOR_INTENSITY_MIN
 
-def follow_for_color_black():
-    return get_color_value() >= BLACK_COLOR_INTENSITY_MAX
+def follow_for_color_black_center():
+    return get_color_values()[0] >= BLACK_COLOR_INTENSITY_MAX
 
-# Keep moving until the color sensor detects white
-def follow_on_color_white():
-    return get_color_value() >= WHITE_COLOR_INTENSITY_MIN
+def follow_for_color_white_left():
+    return get_color_values()[1] <= WHITE_COLOR_INTENSITY_MIN
 
-# Keep moving until the color sensor detects black
-def follow_on_color_black():
-    print("follow_on_color_black - color value = {}".format(get_color_value()))
-    return get_color_value() <= BLACK_COLOR_INTENSITY_MAX
-
-
-async def follow_for_black_followed_by_white(last_color, time_on_black=0.25, time_on_white=0.10):
-    if last_color == "black":
-        runloop.sleep_ms(time_on_black * 1000)
-        if follow_for_color_white():
-            runloop.sleep_ms(time_on_white * 1000)
-            if follow_for_color_white():
-                return True
-    return False
-
-async def follow_for_white_followed_by_black(last_color, time_on_white=0.25, time_on_black=0.10):
-    if last_color == "white":
-        runloop.sleep_ms(time_on_white * 1000)
-        if follow_for_color_black():
-            runloop.sleep_ms(time_on_black * 1000)
-            if follow_for_color_black():
-                return True
-    return False
-
+def follow_for_color_black_left():
+    return get_color_values()[1] >= BLACK_COLOR_INTENSITY_MAX
 
 def get_yaw_value():
     return motion_sensor.tilt_angles()[0] * -0.1
@@ -136,25 +116,21 @@ async def test_turn_left(angle=90):
 async def test_turn_right(angle=0):
     await turn_right(speed=350, angle=0, stop=True)
 
-async def test_go_to_black(reverse=False):
+async def test_go_to_black_center(reverse=False):
     await follow_gyro_angle(kp=-1.45*(1 if reverse else -1), ki=0, kd=0,
-                            speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_black)
+                            speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_black_center)
 
-async def test_go_to_white(reverse=False):
+async def test_go_to_white_center(reverse=False):
     await follow_gyro_angle(kp=-1.45*(1 if reverse else -1), ki=0, kd=0,
-                            speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_white)
+                            speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_white_center)
 
-async def test_go_to_black_followed_by_white(reverse=False):
-    while(True):
-        await follow_gyro_angle(kp=-1.7*(1 if reverse else -1), ki=0, kd=0,
-                                    speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_black)
-        runloop.sleep_ms(100)
-        await follow_gyro_angle(kp=-1.7*(1 if reverse else -1), ki=0, kd=0,
-                                    speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_on_color_black)
-        if get_color_value() >= WHITE_COLOR_INTENSITY_MIN:
-            break
+async def test_go_to_black_left(reverse=False):
+    await follow_gyro_angle(kp=-1.45*(1 if reverse else -1), ki=0, kd=0,
+                            speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_black_left)
 
-
+async def test_go_to_white_left(reverse=False):
+    await follow_gyro_angle(kp=-1.45*(1 if reverse else -1), ki=0, kd=0,
+                            speed=250*(-1 if reverse else 1), target_angle=0, sleep_time=0, follow_for=follow_for_color_white_left)
 
 async def test_fake_missions():
     # Go forward 20 cm
@@ -230,7 +206,7 @@ async def mainProgram():
     #    hub.light_matrix.write(str(i))
 
 
-    # await test_follow_gyro_angle_for_distance(180)
+    # await test_follow_gyro_angle_for_distance(60)
     # await runloop.sleep_ms(1000)
     # await test_follow_gyro_angle_for_distance(-180)
 
@@ -240,9 +216,16 @@ async def mainProgram():
 
     # await test_fake_missions()
 
-    # await test_go_to_black()
+    await test_go_to_black_center()
 
-    # await test_go_to_white()
+    # await test_go_to_white_center()
 
-    await test_go_to_black_followed_by_white()
+    # await test_go_to_black_left()
 
+    # await test_go_to_white_left()
+
+    #await test_go_to_white()
+
+    # await test_go_to_black_followed_by_white()
+
+runloop.run(mainProgram())
